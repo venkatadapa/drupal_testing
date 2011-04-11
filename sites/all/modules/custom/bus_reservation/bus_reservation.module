@@ -1,0 +1,766 @@
+<?php
+
+function bus_reservation_menu() {
+  $items = array();
+  
+  /**
+    * This callabck is for the initial search form
+    */
+  $items['bus_reservation/form'] = array(
+    'title' => t('Book Bus Tickets'),
+    'page callback' => 'bus_reservation_form',
+    'access arguments' => array('access content'),
+    'description' => t('Bus between cities search form'),
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items['bus_reservation/info'] = array(
+    'title' => t('Book Bus Tickets'),
+    'page callback' => 'info_retrieve',
+    'access arguments' => array('access content'),
+    'description' => t('Bus between cities search form'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['bus_reservation/check_availability/%'] = array(
+    'title' => t('Check Availability'),
+    'page callback' => 'check_availability',
+    'access arguments' => array('access content'),
+    'description' => t('Check availability of tickets'),
+    'type' => MENU_CALLBACK,
+  );
+  
+   $items['bus_reservation/popupSeatMap'] = array(
+    'title' => 'Seat Map Popup Callback',
+    'page callback' => '_seatmap_popup',
+    'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'access arguments' => array('access content'),
+  );
+
+   $items['bus_reservation/store_cities'] = array(
+    'title' => 'Store all cities in database',
+    'page callback' => 'bus_reservation_store_cities',
+    'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'access arguments' => array('administer nodes'),
+  );
+
+   $items['bus_reservation/store_source_and_destinations'] = array(
+    'title' => 'Store all cities in database',
+    'page callback' => 'bus_reservation_store_source_destination_pairs',
+    'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'access arguments' => array('administer nodes'),
+  );
+   $items['bus_reservation/booking'] = array(
+     'title' => 'Seat Map Popup Callback',
+     'page callback' => 'make_booking',
+     'type' => MENU_CALLBACK,
+     'access callback' => TRUE,
+     'access arguments' => array('access content'),
+  );
+  
+  return $items;
+}
+
+/**
+ * Store the From cities information into database.
+ */
+function bus_reservation_store_cities() {
+  $params =<<<XML
+        <sns:wsGetCity>
+           <sns:wsGetCityRQ>
+            <wsAuthenticate  xmlns="http://travis.com/webservices">
+               <!--Optional:-->
+               <userId  xmlns="http://travis.com/webservices">spotbill</userId>
+               <!--Optional:-->
+               <groupId  xmlns="http://travis.com/webservices">1</groupId>
+               <!--Optional:-->
+               <password xmlns="http://travis.com/webservices">spotbill@mmyt</password>
+            </wsAuthenticate>
+         </sns:wsGetCityRQ>
+       </sns:wsGetCity>
+           
+XML;
+
+  $cities = data_request('wsGetCity', $params);
+  $sql = "delete from {bus_cities}";
+  db_query($sql);
+  $sql = "insert into {bus_cities} (city_id, city_name, is_active) values (%d, '%s', %d)";
+  foreach($cities['wsGetCityRS']['city'] as $value) {
+    //result contains few unnecessary array elements which are being removed by popping out.
+    array_pop($value);
+    array_pop($value);
+    array_pop($value);
+    array_pop($value);
+    //insert the city values in to the database.
+    db_query($sql, $value['cityId'],$value['cityName'],1);
+  }  
+  return ("Cities from ticketvala have been retrieved and inserted into the database");
+}
+
+/**
+ * Store the source and destination cities into the database.
+ */
+function bus_reservation_store_source_destination_pairs() {
+    $params_pair =<<<XML
+
+        <sns:wsGetSourceDestinationPair>
+          <sns:wsGetSourceDestinationPairRQ>
+            <wsAuthenticate  xmlns="http://travis.com/webservices">
+               <!--Optional:-->
+               <userId  xmlns="http://travis.com/webservices">spotbill</userId>
+               <!--Optional:-->
+               <groupId  xmlns="http://travis.com/webservices">1</groupId>
+               <!--Optional:-->
+               <password xmlns="http://travis.com/webservices">spotbill@mmyt</password>
+            </wsAuthenticate>
+          </sns:wsGetSourceDestinationPairRQ>
+        </sns:wsGetSourceDestinationPair>
+
+XML;
+
+  $city_pairs = data_request('wsSourceDestinationPair',$params_pair);
+  // take these city pairs in JS Array
+  $sql = "delete from {bus_source_destination_pairs}";
+  db_query($sql);
+  $sql = "insert into {bus_source_destination_pairs} (source_city_id, destination_ids, is_active) values (%d, '%s', %d)";
+  $source_destination=array();
+  foreach($city_pairs['wsSourceDestinationPairRS']['sourceDestination'] as $value) {
+    $source = $value['origin']['fromStopId'];
+    if(array_key_exists($source,$source_destination)) {
+      $source_destination[$source] .= ',';
+    }
+    $source_destination[$source] .= $value['destinations']['destination']['tostopId'];
+  }
+  //store the information in database
+  $source_destination_pair = array();
+  foreach($source_destination as $key => $value) {
+    db_query($sql,$key, $value,1);
+  }
+}
+
+function bus_reservation_form() {
+  return drupal_get_form('bus_reservation_search_form');
+}
+
+/**
+ * Bus Search Form
+ */
+
+function bus_reservation_search_form($form_state) {
+
+  //Add JS files for dynamic change of To cities.
+  drupal_add_js(drupal_get_path('module', 'bus_reservation') .'/js/bus_reservation.js');   
+
+  if(empty($form_state['post'])) {
+    $from_cities = get_from_cities();
+    drupal_add_js(array('from_cities' => $from_cities), 'setting');
+    // take these city pairs in JS Array
+    prepare_source_and_destination_pairs();
+    //Initially, the form and to cities are same.
+    $to_cities = $from_cities;
+    
+  //Add JS files for dynamic change of To cities.
+    drupal_add_js(drupal_get_path('module', 'bus_reservation') .'/js/bus_reservation.js');   
+    
+    //   drupal_set_message("<pre>".print_r($city_pairs,1));
+    $form['from'] = array(
+			'#type' => 'select',
+			'#title' => t('From'),
+			'#default_value' => '',
+			'#description' => t("Please select from city"),
+			'#options' => $from_cities,
+			'#attributes' => array('onchange' => "get_destination_cities(this.value)"),
+			);
+  
+  $form['to_cities'] = array(
+			     '#type' => 'select',
+			     '#title' => t('To'),
+			     '#default_value' => '',
+			     '#description' => t("Please select To city"),
+			     '#options' => $to_cities,
+			     );
+  
+  $form['date_dep'] = array(
+			    '#type' => 'date_popup',
+			    '#title' => t('Depart On'),
+			    '#attributes' => array('readonly' => 'readonly'),
+			    '#description' => t("Please enter Departure Date."),
+			    '#date_label_position' => 'within',
+			    '#date_format' => 'Y-m-d',
+			    '#date_timezone' => 'Asia/Kolkata',
+			    '#date_increment' => 15,
+			    '#date_year_range' => '-0:+1',
+			    '#date_date_min' => time(),
+			    '#default_value' => strftime('%Y-%m-%d',time()),
+			    '#readonly' => 'True',
+			    );
+  
+  $form['passengers'] = array(
+				    '#type' => 'select',
+				    '#title' => t('Passengers'),
+				    '#default_value' => '',
+				    '#description' => t("Please select Number of Passengers"),
+				    '#options' => array(
+							1 => '1',
+							2 => '2',
+							3 => '3',
+							4 => '4'
+							),
+				    );
+  $seat_types = get_all_seat_types();	
+  $form['seat_type'] = array(
+			     '#type' => 'select',
+			     '#title' => t('Seating Options'),
+			     '#default_value' => '',
+			     '#description' => t("Please select Seat/Sleeper"),
+			     '#options' => $seat_types,
+			     );
+  
+  $form['more_options'] = array(
+				'#type' => 'fieldset',
+				'#title' => t('More Options'),
+				'#collapsible' => TRUE,
+				'#tree' => FALSE,
+				'#collapsed' => TRUE,
+				);
+   
+  $dep_times = get_all_dep_times();
+  $form['more_options']['dep_time'] = array(
+					    '#type' => 'select',
+					    '#title' => t('Departure Time'),
+					    '#default_value' => '',
+					    '#description' => t("Please select Depature Time"),
+					    '#options' => $dep_times,
+					    );
+  
+  $bus_types = get_all_bus_types();
+  $form['more_options']['bus_type'] = array(
+					    '#type' => 'select',
+					    '#title' => t('Bus Type'),
+					    '#default_value' => '',
+					    '#description' => t("Please select Seat/Sleeper"),
+					    '#options' => $bus_types,
+					    );
+  
+  $form['submit'] = array(
+			  '#type' => 'submit',
+			  '#value' => 'Search Buses',
+			  );  
+  return $form;
+ } 
+ else  {
+   // search form submitted   
+   $from = $form_state['post']['from'];
+   $to = $form_state['post']['to_cities'];
+   $journey_date = $form_state['post']['date_dep']['date'];
+   // change the date to dd-mm-yyyy format to sent to SOAP
+   $journey_date_arr = explode("-",$journey_date);
+   $journey_date = $journey_date_arr[2]."-".$journey_date_arr[1]."-".$journey_date_arr[0];
+   
+   $seat_type_id = $form_state['post']['seat_type'];
+   $bus_type_id = $form_state['post']['bus_type'];
+   $dep_time_id = $form_state['post']['dep_time'];
+   $passengers = $form_state['post']['passengers'];
+   $seat_type = get_seat_type($seat_type_id);
+   
+   if($bus_type_id !=0) {
+     //Get the actual bus type based on bus type id.
+     $bus_type = get_bus_type($bus_type_id);
+   }
+   if($dep_time_id !=0) {
+     //Get the departure time based on dep time id.
+     $dep_time = get_dep_time($journey_date,$dep_time_id);
+   }
+
+   $trip_details = check_availability($from,$to,$journey_date,$seat_type_id, $passengers);
+   return $form['output']= array(
+				 '#type' => 'markup',
+				 '#value' => ' ',
+				 '#prefix' => '<div> '. theme('trip_details',$trip_details, $seat_type, $passengers, $from, $to, $seat_type_id) .'</div>',
+				 );
+   
+ }
+}
+
+/**
+ * send bus check availability request
+ */
+
+function check_availability($from = NULL, $to = NULL, $journey_date = NULL, $seat_type_id = 0, $passengers = 0) {
+  if (arg(1) == 'check_availability') {
+    //Call from callback. set the values
+    $from = arg(2);
+    $to = arg(3);
+    $journey_date = arg(4);
+    $seat_type_id = arg(5);
+    $seat_type = get_seat_type($seat_type_id);
+    $passengers = arg(6);
+  } 
+  
+   $params =<<<XML
+
+       <sns:wsCheckAvailability xmlns="http://travis.com/webservices/WSTicketvala/WSTicketvala"> 
+         <sns:wsCheckAvailabilityRQ xmlns="http://travis.com/webservices/WSTicketvala/WSTicketvala">
+           <fromCity xmlns="http://travis.com/webservices">$from</fromCity>
+           <toCity xmlns="http://travis.com/webservices">$to</toCity>
+           <journeyDate xmlns="http://travis.com/webservices">$journey_date</journeyDate>
+           <seatType xmlns="http://travis.com/webservices">$seat_type_id</seatType>
+           <wsAuthenticate xmlns="http://travis.com/webservices">            
+           <userId xmlns="http://travis.com/webservices">spotbill</userId> 
+           <groupId xmlns="http://travis.com/webservices">1</groupId>
+           <password xmlns="http://travis.com/webservices">spotbill@mmyt</password>
+           </wsAuthenticate>
+         </sns:wsCheckAvailabilityRQ>
+        </sns:wsCheckAvailability>
+        
+XML;
+
+     $trip_details = data_request('wsCheckAvailability', $params);
+     //Filter the trip details based on bus type and dep time.
+     if(isset($trip_details)){
+       $trip_details = filter_trip_details($trip_details, $bus_type, $dep_time);
+     } 
+
+     if (arg(1) == 'check_availability') {
+       drupal_add_js(drupal_get_path('module', 'bus_reservation') . '/js/bus_reservation.js');
+       return theme('trip_details',$trip_details, $seat_type, $passengers, $from, $to, $seat_type_id);
+     }
+     
+     return $trip_details;
+
+}
+
+/**
+ * check if bus type filter is selected in search vs the result bus type.
+ */
+
+function check_bus_type_filter($selected_bus_type = NULL, $result_bus_type = NULL) {
+  if($selected_bus_type) {
+    if ($selected_bus_type == $result_bus_type)
+      return 1;
+    else
+      return 0;
+  } else {
+    //No filter is selected. 
+    return 1;
+  }
+}
+
+/**
+ * check if time filter is selected in search vs the result dep time.
+ */
+
+function check_dep_time_filter($selected_dep_time = array(), $result_dep_time = NULL) {
+  $min_time_range = $selected_dep_time[0];
+  $max_time_range = $selected_dep_time[1];
+
+  if (is_array($selected_dep_time)) {
+    $min_time = strtotime($min_time_range);
+    $max_time = strtotime($max_time_range);
+    $result_dep_time = strtotime($result_dep_time)."--";
+    
+    if (($result_dep_time > $min_time) && ($result_dep_time < $max_time)) {
+      return 1;
+    }
+    else {
+      return 0;
+    }
+  } else {
+    //Dep time filter not selected.
+    return 1;
+  }
+}
+
+/**
+ * check if more filters is provided in search
+ */
+
+function check_more_filters($bus_type = NULL, $result_bus_type = NULL, $dep_time = array(), $result_trip_time = NULL) {
+  if ($bus_type && is_array($dep_time)) {
+    //Both filters are selected.
+    $bus_filter_pass = check_bus_type_filter($bus_type,$result_bus_type);
+    $time_filter_pass = check_dep_time_filter($dep_time,$result_trip_time);
+    if ($bus_filter_pass && $time_filter_pass) {
+      return 1;
+    }
+  }
+  else if ($bus_type) {
+    return check_bus_type_filter($bus_type,$result_bus_type);
+  } else if (is_array($dep_time)) {
+    return check_dep_time_filter($dep_time,$result_trip_time);
+  } else {
+    //No filter selected.
+    return 1;
+  }	 
+}
+
+/**
+ * Filter the trip details 
+ */
+function filter_trip_details($trip_details = array(), $bus_type = NULL, $dep_time = array()) {
+   $i=0;
+   $more_filter_pass = 0;
+   $trip_info = $trip_details['wsCheckAvailabilityRS']['trip'];
+   if (is_array($trip_info[0])) {
+     foreach($trip_info as $data) { 
+       //       echo "Bus type".$data['busType']."--Dep Time".$data['tripTime'];
+       $more_filter_pass = check_more_filters($bus_type, $data['busType'], $dep_time, $data['tripTime']);
+       if ($more_filter_pass) {
+	 foreach ($data as $key => $value) {
+	   $trip_information[$i][$key] = $value;
+	 }
+	 $i++;
+       }
+     } //end of for loop
+     
+   }
+   else {
+     //     echo "Bus type".$trip_info['busType']."--Dep Time".$trip_info['tripTime'];
+     $more_filter_pass = check_more_filters($bus_type, $trip_info['busType'], $dep_time, $trip_info['tripTime']);
+     if ($more_filter_pass) {
+       foreach($trip_info as $key => $value) { 
+	 $trip_information[$i][$key] = $value;
+       }
+     }
+   }
+   return $trip_information;
+   
+}
+
+/**
+ *Returns the list of from cities
+ */
+function get_from_cities() {
+  //Query the data from database.
+  $sql = "SELECT city_id, city_name from {bus_cities} WHERE is_active=%d order by city_name ASC";
+  $cities_query = db_query($sql,1);
+  while ($cities = db_fetch_array($cities_query)) {
+    $from_cities[$cities['city_id']] = $cities['city_name'];
+  }
+  return $from_cities;  
+}
+
+/**
+ *Returns the list of from source and destination pairs
+ */
+function prepare_source_and_destination_pairs() {
+  //Query the source and destination cities.
+  $sql = "SELECT source_city_id, destination_ids from {bus_source_destination_pairs} WHERE is_active=%d";
+  $source_destinations_query = db_query($sql,1);
+  $source_destination_pair = array();
+  while ($cities = db_fetch_array($source_destinations_query)) {
+    $source_destination_pair[$cities['source_city_id']] = $cities['destination_ids'];
+  }  
+  //print this array to JS so that dynamic options can be added to source array
+  drupal_add_js(array('source_destination_pair' => $source_destination_pair), 'setting');
+}
+
+
+/**
+ * Get the differnet Seat types
+ */
+function get_all_seat_types() {
+  $seat_types =  array(
+		      2 => 'Any',
+		      0 => 'Seat',
+		      1 => 'Sleeper'
+		      );
+  return $seat_types;
+}
+
+/**
+ * Get the selected Seat type
+ */
+function get_seat_type($seat_type_id = 0) {
+  $seat_types =  get_all_seat_types();
+  return $seat_types[$seat_type_id];
+}
+
+/**
+ * Get the differnet Bus types
+ */
+function get_all_bus_types() {
+  $bus_types =  array(
+		      0 => 'Any Bus Type',
+		      1 => 'A/C',
+		      2 => 'A/C Classy',
+		      3 => 'A/C Classy Semi Sleeper',
+		      4 => 'AC ISUZU',
+		      5 => 'Mercedez-Benz',
+		      6 => 'Non A/c',
+		      7 => 'Volvo',
+		      8 => 'Volvo Multiaxle',
+		      9 => 'Volvo Semi Sleeper'
+		      );
+  return $bus_types;
+}
+
+/**
+ * Get the selected Bus type
+ */
+function get_bus_type($bus_type_id = 0) {
+  $bus_types =  get_all_bus_types();
+  if ($bus_type_id != 0) {
+    return $bus_types[$bus_type_id];
+  }
+}
+
+/**
+ * Get the differnet Departure Times
+ */
+function get_all_dep_times() {
+  $dep_times =  array(
+		      0 => 'Any Departure Time',
+		      1 => '12:00 AM - 04.00 AM',
+		      2 => '04:00 AM - 08.00 AM',
+		      3 => '08:00 AM - 12.00 PM',
+		      4 => '12:00 PM - 04.00 PM',
+		      5 => '04:00 PM - 08.00 PM',
+		      6 => '08:00 PM - 12.00 AM'
+		      );
+  return $dep_times;
+}
+
+/**
+ * Get the selected departure time.
+ */
+function get_dep_time($journey_date = NULL, $dep_time_id = 0) {
+  $dep_times = get_all_dep_times();
+  if ($dep_time_id != 0) {
+    $dep_time = $dep_times[$dep_time_id];
+    $dep_time = explode("-",$dep_time);
+    // if 12 pm night is selected, then we need to decrese to 11.59 pm,so that the same day max time is taken.
+    if (trim($dep_time[1]) == "12.00 AM") {
+      $dep_time[1] = "11.59 PM";
+    }
+    //Need to change the date format to YYYY-mm-dd from dd-mm-yyyy
+    $journey_date_arr = explode("-",$journey_date);
+    $journey_date = $journey_date_arr[2]."-".$journey_date_arr[1]."-".$journey_date_arr[0];
+    //Adding journey date also to dep_time array
+    foreach ($dep_time as $key => $value) {
+      $dep_time[$key] = $journey_date." ".$value;
+    }
+    return $dep_time;
+  }
+}
+
+/**
+ * Sends request to Ticketwala API
+ */
+function data_request($service_request = NULL, $params = array() )
+{
+
+  require_once('lib/nusoap/nusoap.php');
+  
+/*
+ //Will use these if proxy server is installed
+ $proxyhost = isset($_POST['proxyhost']) ? $_POST['proxyhost'] : '';
+ $proxyport = isset($_POST['proxyport']) ? $_POST['proxyport'] : '';
+ $proxyusername = isset($_POST['proxyusername']) ? $_POST['proxyusername'] : '';
+ $proxypassword = isset($_POST['proxypassword']) ? $_POST['proxypassword'] : '';
+*/
+  
+  $client = new nusoap_client('http://stagews.ticketvala.com/axis2/services/WSTicketvala?wsdl', true);
+  
+  $client->setEndpoint('http://stagews.ticketvala.com/axis2/services/WSTicketvala');
+  $client->soap_defencoding = 'UTF-8';
+  $err = $client->getError();
+  
+  if ($err) {
+    echo '<h2>Constructor error</h2><pre>' . $err . '</pre>';
+  }
+  
+  $result = $client->call($service_request, $params,'http://travis.com/webservices/WSTicketvala/WSTicketvala');
+  if ($client->fault || $result[$service_request.RS][error]) {
+    drupal_set_message("Error. There are no trips available for the route selected.");
+    /*echo '<h2>Fault</h2><pre>';
+    print_r($result);
+    echo '</pre>';*/
+  } else {
+    // Check for errors
+    $err = $client->getError();
+    if ($err) {
+      // Display the error
+      echo '<h2>Error</h2><pre>' . $err . '</pre>';
+    } else {
+      return $result;
+    }
+  }
+}
+
+// Adds logic to validate the form to check the validity of the new fields, 
+// if they exist.
+function bus_reservation_form_validate($form, &$form_state) {
+  
+  
+  
+}
+
+function bus_reservation_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'bus_ticket_node_form')
+    {
+      
+//      $tripId = $_GET['id'];
+
+    
+$wsMakeBooking = $params =<<<XML
+
+     <sns:wsMakeBooking xmlns="http://travis.com/webservices/WSTicketvala/WSTicketvala">
+         <sns:wsMakeBookingRQ xmlns="http://travis.com/webservices/WSTicketvala/WSTicketvala">
+           <tripId xmlns="http://travis.com/webservices">5979821</tripId>
+            <pickupPointId xmlns="http://travis.com/webservices">20448753</pickupPointId>
+            <seatType xmlns="http://travis.com/webservices">0</seatType>
+            <paxDetails xmlns="http://travis.com/webservices">
+               <paxDetail xmlns="http://travis.com/webservices">
+                  <title xmlns="http://travis.com/webservices">Mr</title>
+                  <firstName xmlns="http://travis.com/webservices">abcd</firstName>
+                  <lastName xmlns="http://travis.com/webservices">pqrs</lastName>
+                  <age xmlns="http://travis.com/webservices">32</age>
+                  <seatNo xmlns="http://travis.com/webservices">3</seatNo>
+                  <ticketNumber xmlns="http://travis.com/webservices"></ticketNumber>
+               </paxDetail>
+            </paxDetails>
+            <contactDetails xmlns="http://travis.com/webservices">
+               <dateOfBirth xmlns="http://travis.com/webservices">02-02-1992</dateOfBirth>
+               <mobile xmlns="http://travis.com/webservices">9246221133</mobile>
+               <email xmlns="http://travis.com/webservices">ab@cd.com</email>
+            </contactDetails>
+            <paymentDetails xmlns="http://travis.com/webservices">
+               <amount xmlns="http://travis.com/webservices">500.00</amount>
+               <paymentMode xmlns="http://travis.com/webservices">card</paymentMode>
+               <paymentId xmlns="http://travis.com/webservices">123456</paymentId>
+               <authorizationCode xmlns="http://travis.com/webservices">re34</authorizationCode>
+               <transactionId xmlns="http://travis.com/webservices">12345678</transactionId>
+               <cardNumber xmlns="http://travis.com/webservices">123456789123456</cardNumber>
+               <authorisationCode xmlns="http://travis.com/webservices">re34</authorisationCode>
+               <crossReferenceTrace xmlns="http://travis.com/webservices">ddeee</crossReferenceTrace>
+               <transactionDateTime xmlns="http://travis.com/webservices"></transactionDateTime>
+            </paymentDetails>
+            <error xmlns="http://travis.com/webservices">?</error>
+            <errorCode xmlns="http://travis.com/webservices">?</errorCode>
+            <seatHoldKey xmlns="http://travis.com/webservices">129663190953126</seatHoldKey>           
+            <wsAuthenticate xmlns="http://travis.com/webservices">
+               <userId xmlns="http://travis.com/webservices">spotbill</userId>
+               <groupId xmlns="http://travis.com/webservices">1</groupId>
+               <password xmlns="http://travis.com/webservices">spotbill@mmyt</password>
+            </wsAuthenticate>
+         </sns:wsMakeBookingRQ>
+      </sns:wsMakeBooking>
+        
+XML;
+
+$booking_details = data_request('wsMakeBooking', $params);
+return theme('booking',$booking_details);
+
+      
+    }
+    
+}
+
+
+function bus_reservation_theme($trip_details = array()) {
+  return array(
+    'trip_details' => array(
+      'template' => 'bus_reservation',
+      'arguments' => array('trip_details' => NULL, 'seat_type' => NULL, 'passengers' => NULL, 'fromCityid' => 0, 'toCityid' =>0, 'seat_type_id' => 0),
+    ),
+    'seatmap' => array(
+      'template' => 'seatmap_display',
+      'arguments' => array('xml_seatmap' => NULL),
+    ),
+    'booking' => array(
+      'template' => 'print_ticket',
+      'arguments' => array('booking_details' => NULL),
+    ),
+   );
+}
+
+function bus_reservation_submit_handler(&$form,&$form_state) {
+
+echo "<pre>";print_r($form_state);
+die("in submit handler");
+ 
+   
+
+}
+
+function _seatmap_popup()
+{
+$tripId = $_GET['id'];
+$number_of_passengers = $_GET['no_of_passengers'];
+$wsGetSeatmap = $params =<<<XML
+
+     <sns:wsGetSeatMap xmlns="http://travis.com/webservices/WSTicketvala/WSTicketvala">
+         <sns:wsGetSeatMapRQ xmlns="http://travis.com/webservices/WSTicketvala/WSTicketvala">
+           <tripId xmlns="http://travis.com/webservices">$tripId</tripId>
+            <wsAuthenticate xmlns="http://travis.com/webservices">
+               <userId xmlns="http://travis.com/webservices">spotbill</userId>
+               <groupId xmlns="http://travis.com/webservices">1</groupId>
+               <password xmlns="http://travis.com/webservices">spotbill@mmyt</password>
+            </wsAuthenticate>
+         </sns:wsGetSeatMapRQ>
+      </sns:wsGetSeatMap>
+        
+XML;
+
+$get_seatmap = data_request('wsGetSeatMap', $params);
+$seatmapxml = $get_seatmap['wsGetSeatMapRS']['tripSeat']['seatMap'];
+$xml_seatmap = simplexml_load_string($seatmapxml);
+
+
+drupal_add_js(drupal_get_path('module', 'bus_reservation') . '/js/bus_reservation.js');
+drupal_add_css(drupal_get_path('module', 'bus_reservation') .'/includes/styles.css');
+  
+    return theme('seatmap',$xml_seatmap, $number_of_passengers);
+}
+
+
+/**
+ * Autofill the previously filled fields and open up the node creation form
+ */
+
+function make_booking()
+{
+
+include_once(drupal_get_path('module', 'node') . '/node.pages.inc');
+
+//$tripId = $_GET['id'];
+//$seatType = $_GET['seatType'];
+//$pickupPointId = $_GET['pickupPoint'];
+//$amount = $_GET['amount'];
+//$setHoldKey = $_GET['holdKey'];
+
+
+  $node = new stdClass();
+  $node->title = t('Bus ticket booking for seat= and trip = ');
+  $node->type = 'bus_ticket';
+  $node->created = time();
+  $node->changed = $node->created;
+  $node->status = 1;          // Published?
+  $node->promote = 0;       // Display on front page?
+  $node->sticky = 0;          // Display top of page?
+  $node->format = 1;         // Filtered HTML?
+  $node->uid = $GLOBALS["user"]->uid;             //  Content owner uid (author)?
+  $node->language = 'en';
+  
+  //cck fields of the node 
+  $node->field_journey_name[0]['value'] =  "Delhi to Jodhpur" ;
+  $node->field_pickup_point[0]['value'] =  "New Khanna Nagar";
+  $node->field_depart_time[0]['value'] = "08:30 PM";
+  $node->field_operator[0]['value'] = "Kanak";
+  $node->field_bus_type[0]['value'] = "Non A/C" ;
+  $node->field_selected_seats[0]['value'] = "3" ;
+  $node->field_seat_fare[0]['value'] = "500.00";
+
+return drupal_get_form('bus_ticket' . '_node_form', $node);
+		
+}
+
+
+function booking() {
+
+
+}

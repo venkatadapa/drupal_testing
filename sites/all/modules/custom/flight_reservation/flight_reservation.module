@@ -1,0 +1,2069 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Enables the online Flight tickets reservation process using makemytrip API
+*/
+define('NUSOAP_NAME_SPACE', 'spotonline.dev');
+//define('WSDL_PATH', 'http://www.travelpartnernetwork.net/Affiliate/services/CFlightAffiliateWebServices?WSDL'); //Live
+define('WSDL_PATH', 'http://202.54.232.144/Affiliate/services/CFlightAffiliateWebServices?WSDL'); //Staging
+define('API_USERNAME', 'orienstravels');
+define('API_PASSWORD', '0r1ence5');
+/**
+* Implementation of hook_block
+*/
+function flight_reservation_block($op = 'list', $delta = 0, $edit = array()) {
+  $blocks = array();
+  switch ($op) {
+  case 'list':
+    $blocks['filter_flight_search_results']['info'] = t('Filter Onward Flights');
+    return $blocks;
+  case 'view':
+    switch ($delta) {
+      case 'filter_flight_search_results':
+        $block['subject'] = t('Filter Flights Search Results');
+        $block['content'] = build_search_results_filter();
+      break;
+    }
+    return $block;
+  }
+}
+/**
+* Implementation of search filters form
+*/
+function build_search_results_filter() {
+  drupal_add_js(drupal_get_path('module', 'flight_reservation') .'/js/jquery-1.4.1.min.js');
+  drupal_add_css(drupal_get_path('module', 'flight_reservation') .'/css/jquery-ui-1.8rc1.custom.css');
+  drupal_add_js(drupal_get_path('module', 'flight_reservation') .'/js/jquery-ui-1.8rc1.custom.min.js');
+  drupal_add_css(drupal_get_path('module', 'flight_reservation') .'/css/slider.css');
+  drupal_add_css(drupal_get_path('module', 'flight_reservation') .'/css/lightbox.css');
+  return theme('search_results_filters');
+  return $main_form;
+}
+function flight_reservation_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+  
+  }
+}
+/**
+* Implementation of hook_menu()
+*/
+function flight_reservation_menu() {
+  $items = array();
+  $items['flights/search'] = array(
+    'title' => t('Flight Search'),
+    'description' => t('BOOK AIR TRAVEL TICKETS'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('flights_form_page'),
+    'access callback' => TRUE, 
+    'type' => MENU_NORMAL_ITEM,
+   );
+  $items['flights/show'] = array(
+     //'title' => t('Flight Search Results'),
+    'description' => t('Flight Search Results'),
+    'page callback' => 'flights_show_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+   );
+  $items['flights/show2'] = array(
+    'title' => t('Flight Search Results'),
+    'description' => t('Flight Search Results'),
+    'page callback' => 'ajax_callback',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+   );
+  $items['flights/showreturn'] = array(
+    'title' => t('Return Flights'),
+    'description' => t('Return Flights'),
+    'page callback' => 'return_flights_show',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['flights/showreturn_ajax'] = array(
+    'title' => t('Return Flights'),
+    'description' => t('Return Flights'),
+    'page callback' => 'ajax_callback_return_flights',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['flights/reload'] = array(
+    'title' => t(''),
+    'description' => t(''),
+    'page callback' => 'flights_reload',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['flights/reload_return'] = array(
+    'title' => t(''),
+    'description' => t(''),
+    'page callback' => 'flights_reload_return',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['flights/selected'] = array(
+    'title' => t('Review'),
+    'description' => t('Review Page'),
+    'page callback' => 'flight_selected',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['flights/continuePayment'] = array(
+    'title' => t('Traveller Info And Payment'),
+    'description' => t('BOOK AIR TRAVEL TICKETS'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('collect_traveller_info_page'),
+    'access callback' => TRUE, 
+    'type' => MENU_CALLBACK,
+  );
+  $items['testpage'] = array(
+    'title' => t('Testing Page'),
+    'description' => t(''),
+    'page callback' => 'test_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+/**
+ * Implementation of hook_theme()
+*/ 
+function flight_reservation_theme() {
+  return array(
+    'bus_ticket' => array(
+      'template' => 'print-ticket',
+      'arguments' => array('ticket_details' => NULL),
+    ),
+    'onward_flights_listing' => array(
+      'template' => 'onward-flights-listing',
+      'arguments' => array('flight_params' => NULL),
+    ),
+    'return_flights_listing' => array(
+      'template' => 'return-flights-listing',
+      'arguments' => array('flight_params' => NULL),
+    ),
+    'search_results_filters' => array(
+      'template' => 'search-results-filters',      
+    ),
+    'show_flights' => array(
+      'template' => 'show-flights',
+      'arguments' => array('flight_details' => NULL, 'return_flight_details' =>  NULL),
+    ),
+    'show_return_flights' => array(
+      'template' => 'show-return-flights',
+      'arguments' => array('flight_details' => NULL),
+    ),
+    'review_travel_details' => array(
+      'template' => 'review-travel-details',
+      'arguments' => array('details' => NULL, 'flight_details_onward' => NULL, 'flight_details_return' => NULL, 'submitted' => NULL),
+    ), 
+  );
+}
+/*
+* Implementation of flights form 
+*/
+function flights_form_page(&$form) {
+  drupal_add_js(array('hide_airlines' => 'yes'), 'setting');
+  $form = array();
+  $city_options = _get_cities();
+  $airlines_options = _airlines();
+  $trip_options = array(
+    'O' => t('One Way'),
+    'R' => t('Return Trip'),
+  );
+  $form['trip_type'] = array(
+    '#type' => 'radios',
+    '#title' => t(''),
+    '#options' => $trip_options,
+    '#default_value' => 'O',
+  );
+  $form['cleardiv-triptype'] = array(
+    '#value' => '<div class="cleardiv"></div>',
+  );
+  $form['leaving_from'] = array(
+    '#type' => 'select',
+    '#title' => t('Leaving From'),
+    '#options' => $city_options,
+  );
+  $form['going_to'] = array(
+    '#type' => 'select',
+    '#title' => t('Going To'),
+    '#options' => $city_options,
+  );
+  $form['departure_time'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('Departure'),
+    '#date_label_position' => 'within',
+    '#date_format' => 'Y-m-d',
+    '#date_timezone' => 'Asia/Kolkata',
+    '#date_increment' => 15,
+    '#date_year_range' => ':+1',
+    '#date_date_min' => date('Y-m-d'),
+    '#date_datepicker_attributes' => array('numberOfMonths' => 2, 'showOn' => 'focus'),
+    '#attributes' => array('readonly' => 'readonly', 'autocomplete' => 'off'),    
+  );
+  $form['return_time'] = array(
+    '#title' => t('Return'),
+    '#type' => 'date_popup',
+    '#date_label_position' => 'within',
+    '#date_format' => 'Y-m-d',
+    '#date_timezone' => 'Asia/Kolkata',
+    '#date_increment' => 15,
+    '#date_year_range' => ':+1',
+    '#date_date_min' => time(),
+    '#date_datepicker_attributes' => array('numberOfMonths' => 2, 'showOn' => 'focus'),
+    '#attributes' => array('readonly' => 'readonly', 'autocomplete' => 'off'),    
+  );
+  $form['travellers-text'] = array(
+    '#value' => '<div class="travellers-text">Travellers (Upto 6 per booking)</div>',
+  );
+  $form['adults'] = array(
+    '#type' => 'select',
+    '#title' => t('Adults (12+)'),
+    '#options' => array('1' => '1',
+     '2' => '2',
+     '3' => '3',
+     '4' => '4',
+     '5' => '5',
+     '6' => '6'),
+  );
+  $form['children'] = array(
+    '#type' => 'select',
+    '#title' => t('Children (2-11)'),
+    '#options' => array('0' => '0',
+     '1' => '1',
+     '2' => '2',
+     '3' => '3',
+     '4' => '4'),
+  );
+  $form['infants'] = array(
+    '#type' => 'select',
+    '#title' => t('Infants (0-2)'),
+    '#options' => array('0' => '0',
+     '1' => '1',
+     '2' => '2'),
+  );
+  $form['cleardiv-infants'] = array(
+    '#value' => '<div class="cleardiv"></div>',
+  );
+  $cabin_class_options = array(
+    'E' => t('Economy'),
+    'B' => t('Business')
+  );
+  $form['cabinclass-text'] = array(
+    '#value' => '<div class="cabinclass-text">Cabin/Class</div>',
+  );
+  $form['cabin_class'] = array(
+    '#type' => 'radios',
+    '#title' => t(''),
+    '#options' => $cabin_class_options,
+    '#default_value' => 'E',
+    '#attributes' => array('id' => 'cabin-class-wrapper'),
+  );
+  $form['cleardiv-cabinclass'] = array(
+    '#value' => '<div class="cleardiv"></div>',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' =>  t('Search For Flights'),
+  );
+  return $form; 
+}
+/*
+* Implementation of flights filter form 
+*/
+function flights_filter_form_page(&$form) {
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey);
+  drupal_add_js(array('departure_date' => $submitted['departure_time']), 'setting');
+  drupal_add_js(array('return_date' => $submitted['return_time']), 'setting');
+  $form = array();
+  $city_options = _get_cities();
+  $airlines_options = _airlines();
+  $trip_options = array(
+    'O' => t('One Way'),
+    'R' => t('Return Trip'),
+  );
+  $form['trip_type'] = array(
+    '#type' => 'radios',
+    '#title' => t(''),
+    '#options' => $trip_options,
+    '#default_value' => $submitted['trip_type'],
+  );
+  $form['cleardiv-triptype'] = array(
+    '#value' => '<div class="cleardiv"></div>',
+  );
+  $form['leaving_from'] = array(
+    '#type' => 'select',
+    '#title' => t('Leaving From'),
+    '#options' => $city_options,
+    '#default_value' => $submitted['leaving_from'],
+  );
+  $form['going_to'] = array(
+    '#type' => 'select',
+    '#title' => t('Going To'),
+    '#options' => $city_options,
+    '#default_value' => $submitted['going_to'],
+  );
+  $form['departure_time'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('Departure'),
+    '#date_label_position' => 'within',
+    '#date_format' => 'Y-m-d',
+    '#date_timezone' => 'Asia/Kolkata',
+    '#date_increment' => 15,
+    '#date_year_range' => ':+1',
+    '#date_date_min' => time(),
+    '#default_value' => $submitted['departure_time'],
+    '#date_datepicker_attributes' => array('numberOfMonths' => 2, 'showOn' => 'focus'),
+    '#attributes' => array('autocomplete' => 'off'),
+  );
+  $form['return_time'] = array(
+    '#title' => t('Return'),
+    '#type' => 'date_popup',
+    '#date_label_position' => 'within',
+    '#date_format' => 'Y-m-d',
+    '#date_timezone' => 'Asia/Kolkata',
+    '#date_increment' => 15,
+    '#date_year_range' => ':+1',
+    '#date_date_min' => time(),
+    '#default_value' => $submitted['return_time'],
+    '#date_datepicker_attributes' => array('numberOfMonths' => 2, 'showOn' => 'focus'),
+    '#attributes' => array('autocomplete' => 'off'),
+  );
+
+  $form['travellers-text'] = array(
+    '#value' => '<div class="travellers-text">Travellers (Upto 6 per booking)</div>',
+  );
+  $form['adults'] = array(
+    '#type' => 'select',
+    '#title' => t('Adults (12+)'),
+    '#options' => array('1' => '1',
+     '2' => '2',
+     '3' => '3',
+     '4' => '4',
+     '5' => '5',
+     '6' => '6'),
+   '#default_value' => $submitted['adults'],
+  );
+  $form['children'] = array(
+    '#type' => 'select',
+    '#title' => t('Children (2-11)'),
+    '#options' => array('0' => '0',
+     '1' => '1',
+     '2' => '2',
+     '3' => '3',
+     '4' => '4'),
+    '#default_value' => $submitted['children'],
+  );
+  $form['infants'] = array(
+    '#type' => 'select',
+    '#title' => t('Infants (0-2)'),
+    '#options' => array('0' => '0',
+     '1' => '1',
+     '2' => '2'),
+    '#default_value' => $submitted['infants'],
+  );
+  $form['cleardiv-infants'] = array(
+    '#value' => '<div class="cleardiv"></div>',
+  );
+  $cabin_class_options = array(
+    'E' => t('Economy'),
+    'B' => t('Business')
+  );
+  $form['cabinclass-text'] = array(
+    '#value' => '<div class="cabinclass-text">Cabin/Class</div>',
+  );
+  $form['cabin_class'] = array(
+    '#type' => 'radios',
+    '#title' => t(''),
+    '#options' => $cabin_class_options,
+    '#default_value' => $submitted['cabin_class'],
+    '#attributes' => array('id' => 'cabin-class-wrapper'),
+  );
+  $form['cleardiv-cabinclass'] = array(
+    '#value' => '<div class="cleardiv"></div>',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' =>  t('Search For Flights'),
+  );
+  return $form; 
+}
+/*
+* Implementation of extra search filters form 
+*/
+function flight_search_extra_filters_form(&$form) {
+  $form = array();
+  $airlines_options = array(
+    '6E' => t('Indigo'),
+    '9H' => t('Mdlr'),
+    '9W' => t('Jet Airways'),
+    'AI' => t('Air India'),
+    'DN' => t('Kingfisher Red'),
+    'G8' => t('Go Air'),
+    'I7' => t('Paramount'),
+    'IC' => t('Indian'),
+    'IC' => t('Kingfisher class'),
+    'S2' => t('Jet Lite'),
+    'JL' => t('Jet Lite Codeshare'),
+    'JK' => t('Jet Konnect'),
+    'SG' => t('Spicejet'),
+    'GC' => t('Go Business'),
+    'IX' => t('Air India Express'),
+  );
+  $stop_options = array(
+    '0' => t('Non Stop'),
+    '1' => t('All'),
+  );
+  $form['stops-options-title'] = array(
+   '#value' => '<div id="stops-options"><span class="block-collapse block-expanded"></span>Stops</div><div id="stops-options-radios">',
+  );
+  $form['direct_flights'] = array(
+    '#type' => 'radios',
+    '#title' => '',
+    '#options' => $stop_options,
+  );
+  $form['stops-options-cleardiv'] = array(
+    '#value' => '</div><div class="cleardiv"></div>',
+  );
+  $form['airlines-title'] = array(
+    '#value' => '<div id="airlines-title"><span class="block-collapse block-expanded"></span>Airlines</div>',
+  );
+  $form['airlines'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t(''),
+    '#prefix' => '<div class="airlines_checkboxes">',
+    '#options' => $airlines_options,
+    '#suffix' => '</div>',
+  );
+  $form['airlines-cleardiv'] = array(
+   '#value' => '<div class="cleardiv"></div>',
+  );
+  $form['refundable_heading'] = array(
+    '#value' => '<div id="refundable-heading"><span class="block-collapse block-expanded"></span>Refundable Fares</div>',
+  );
+  $form['refundable_only'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Refundable fares only'),
+  );
+  $form['slider_price_min'] = array(
+    '#type' => 'hidden',
+    '#default_value' => '',
+  );
+  $form['slider_price_max'] = array(
+    '#type' => 'hidden',
+    '#default_value' => ''
+  );
+  $form['slider_time_min'] = array(
+    '#type' => 'hidden',
+    '#default_value' => '',
+  );
+  $form['slider_time_max'] = array(
+    '#type' => 'hidden',
+    '#default_value' => '',
+  );
+  $form['searchkey_values'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $_GET['searchkey'],
+  );
+  $form['slider_price_min_default'] = array(
+    '#type' => 'hidden',
+    '#default_value' => '',
+  );
+  $form['slider_price_max_default'] = array(
+    '#type' => 'hidden',
+    '#default_value' => ''
+  );
+  return $form; 
+}
+/*
+* Flights main form validations
+*/
+function flights_form_page_validate($form, &$form_state) {
+  if ($form_state['values']['departure_time'] == '') {
+    form_set_error('departure_time', t('Please enter the departure time'));
+  }
+  if ($form_state['values']['trip_type'] == 'R' && $form_state['values']['return_time']!='') {
+    if ( strtotime($form_state['values']['departure_time']) > strtotime($form_state['values']['return_time']) ) {
+      form_set_error('return_time', t('The Return date cannot be before the Departure date'));
+    }
+  }
+  if (($form_state['values']['adults'] + $form_state['values']['children'] + $form_state['values']['infants']) > 6 ) {
+    form_set_error('adults', t('A maximum of 6 Adult passengers can be booked at a time'));
+  }
+  if ($form_state['values']['leaving_from'] == '0' || $form_state['values']['leaving_from'] == '1' ) {
+    form_set_error('leaving_from', t("Leaving from can't be blank"));
+  }
+  if ($form_state['values']['going_to'] == '0' || $form_state['values']['going_to'] == '1' ) {
+    form_set_error('going_to', t("Going to can't be blank"));
+  }
+  if ($form_state['values']['trip_type'] == 'R' && $form_state['values']['return_time']['date']=='') {
+    form_set_error('return_time', t("Please specify a Return date OR change trip type to 'One Way'"));
+  }   
+}
+function flights_filter_form_page_validate($form, &$form_state) {
+  if ($form_state['values']['departure_time'] == '') {
+    form_set_error('departure_time', t('Please enter the departure time'));
+  }
+  if ($form_state['values']['trip_type'] == 'R' && $form_state['values']['return_time']!='') {
+    if ( strtotime($form_state['values']['departure_time']) > strtotime($form_state['values']['return_time']) ) {
+      form_set_error('return_time', t('The Return date cannot be before the Departure date'));
+    }
+  }
+  if (($form_state['values']['adults'] + $form_state['values']['children'] + $form_state['values']['infants']) > 6 ) {
+    form_set_error('adults', t('A maximum of 6 Adult passengers can be booked at a time'));
+  }
+  if ($form_state['values']['leaving_from'] == '0' || $form_state['values']['leaving_from'] == '1' ) {
+    form_set_error('leaving_from', t("Leaving from can't be blank"));
+  }
+  if ($form_state['values']['going_to'] == '0' || $form_state['values']['going_to'] == '1' ) {
+    form_set_error('going_to', t("Going to can't be blank"));
+  }
+  if ($form_state['values']['trip_type'] == 'R' && $form_state['values']['return_time']['date']=='') {
+    form_set_error('return_time', t("Please specify a Return date OR change trip type to 'One Way'"));
+  }   
+}
+/*
+* Flights main form submision page
+*/
+function flights_form_page_submit(&$form , &$form_state) {
+  global $base_url;
+  $trip_type = $form_state['values']['trip_type'];
+  $leaving_from = $form_state['values']['leaving_from'];
+  $going_to = $form_state['values']['going_to'];
+  $departure_date = $form_state['values']['departure_time'];
+  $return_date = is_array($form_state['values']['return_time']) ? '' : $form_state['values']['return_time'];
+  $adults = $form_state['values']['adults'];
+  $children = $form_state['values']['children'];
+  $infants = $form_state['values']['infants'];
+  $cabin_class = $form_state['values']['cabin_class'];
+  $seperator = '|';
+  $url_string = $trip_type . $seperator . $leaving_from . $seperator . $going_to . $seperator . $departure_date . $seperator . $return_date . $seperator . $adults . $seperator . $children . $seperator . $infants . $seperator . $cabin_class;
+  $form_state['redirect'] = $base_url . '/flights/show?searchkey=' . urlencode($url_string);
+}
+/**
+* Flights filter form submision page
+*/
+function flights_filter_form_page_submit(&$form , &$form_state) {
+  global $base_url;
+  $trip_type = $form_state['values']['trip_type'];
+  $leaving_from = $form_state['values']['leaving_from'];
+  $going_to = $form_state['values']['going_to'];
+  $departure_date = $form_state['values']['departure_time'];
+  if (is_array($form_state['values']['return_time']) || strlen($form_state['values']['return_time'])<19) {
+    $return_date = '';
+  } 
+  else {
+    $return_date = $form_state['values']['return_time']; 
+  } 
+  $adults = $form_state['values']['adults'];
+  $children = $form_state['values']['children'];
+  $infants = $form_state['values']['infants'];
+  $cabin_class = $form_state['values']['cabin_class'];
+  $seperator = '|';
+  $url_string = $trip_type . $seperator . $leaving_from . $seperator . $going_to . $seperator . $departure_date . $seperator . $return_date . $seperator . $adults . $seperator . $children . $seperator . $infants . $seperator . $cabin_class;
+  $form_state['redirect'] = $base_url . '/flights/show?searchkey=' . urlencode($url_string);
+}
+/*
+* Show available onward flights based on search
+*/
+function flights_show_page() {
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey); 
+  $city_options = _get_cities();
+  $flight_params = array();
+  $flight_params['leaving_from'] = $city_options[$submitted['leaving_from']];
+  $flight_params['going_to'] = $city_options[$submitted['going_to']];
+  if ($submitted['departure_time']['date']=='' || empty($submitted['departure_time'])) {
+    $flight_params['departure_date'] = '';
+  } 
+  else {
+    $flight_params['departure_date'] = date('d-M-Y', strtotime($submitted['departure_time']));
+  }
+  if ($submitted['return_time']['date']=='' || empty($submitted['return_time'])) {
+    $flight_params['return_date'] = '';
+  } 
+  else {
+    $flight_params['return_date'] = date('d-M-Y', strtotime($submitted['return_time']));
+  }
+  return theme('onward_flights_listing', $flight_params);  
+}
+/**
+*Implementation loading available flights via ajax  
+*/
+function ajax_callback() {
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey);
+  //Advanced Filter Variables from ajax callback
+  $no_stops_filter = '';
+  $refundable = '';
+  $airlines_prefered_filter = '';
+  $price_min_filter = '';
+  $price_max_filter = '';
+  $time_min_filter = '';
+  $time_max_filter = '';
+  if (isset($_GET['price_min'])) {
+    $price_min_filter = $_GET['price_min'];
+  }
+  if (isset($_GET['price_max'])) {
+    $price_max_filter = $_GET['price_max'];
+  }
+  if (isset($_GET['time_min'])) {
+    $time_min_filter = $_GET['time_min'];
+  }
+  if (isset($_GET['time_max'])) {
+    $time_max_filter = $_GET['time_max'];
+  }
+  if (isset($_GET['refundable'])) {
+    $refundable = $_GET['refundable'];
+  }
+  if (isset($_GET['no_stops'])) {
+    $no_stops_filter = $_GET['no_stops'];
+  }
+  if (isset($_GET['airlines_prefered'])) {
+    $airlines_prefered_filter = $_GET['airlines_prefered'];
+  }
+  $xml = _get_flights($submitted, $no_stops_filter, $airlines_prefered_filter, $return_trip = 'no');
+  //Unique session id generated by API, used for further actions
+  $sessionID =  $xml->xpath('//soapHeader');
+  
+  //Returned body 
+  $returned = $xml->xpath('//soapBody/ns1getFlightSearchResultsResponse/ns1return');
+  
+  //parse the returned body xml string 
+  $newxml = simplexml_load_string($returned['0']);
+  
+  $city_options = _get_cities();
+
+  //Values pass to template file
+  $flight_details = array();
+  $flight_details['adults'] = $submitted['adults'];
+  $flight_details['children'] = $submitted['children'];
+  $flight_details['infants'] = $submitted['infants'];
+  $flight_details['leaving_from'] = $city_options[$submitted['leaving_from']];
+  $flight_details['going_to'] = $city_options[$submitted['going_to']];
+  if ($submitted['departure_time']['date'] == '' || empty($submitted['departure_time'])) {
+    $flight_details['departure_date'] = '';
+  } 
+  else {
+    $flight_details['departure_date'] = date('d-M-Y', strtotime($submitted['departure_time']));
+  }
+  if ($submitted['return_time']['date'] == '' || empty($submitted['return_time'])) {
+    $flight_details['return_date'] = '';
+  } 
+  else {
+    $flight_details['return_date'] = date('d-M-Y', strtotime($submitted['return_time']));
+  }
+  $flight_details['responsecode'] = $newxml->ResponseCode;
+  $flight_details['sessionID'] = $sessionID[0]->SessionId;
+  $linked_flight_info_index = 0;
+  //drupal_set_message('<pre>'.print_r($newxml,TRUE));
+  if ($newxml->ResponseCode == '200-success') {
+    foreach ($newxml->Onward->flight as $flight) {
+       foreach ($flight->FlightSegments as $info) { //start
+	 //drupal_set_message('Type:'.count($info->FlightSegment).'<pre>'.print_r($info,TRUE));	  
+         if (count($info->FlightSegment)>1) { //means linked flight
+	   for ($index=0; $index<count($info->FlightSegment); $index++) {
+	      $flight_details['linked_flight'][$linked_flight_info_index]['airline_name'][]=$info->FlightSegment[$index]->AirlineName;
+              $flight_details['linked_flight'][$linked_flight_info_index]['carrier_code'][] = $info->FlightSegment[$index]->carrierCode;
+              $flight_details['linked_flight'][$linked_flight_info_index]['flight_number'][] = $info->FlightSegment[$index]->flightNumber;
+              $origin_code = $info->FlightSegment[$index]->origin;
+              $destination_code = $info->FlightSegment[$index]->destination;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['origin'][] = (array_key_exists("$origin_code", $city_options)) ? $city_options["$origin_code"] : $origin_code;
+              $flight_details['linked_flight'][$linked_flight_info_index]['destination'][] =  (array_key_exists("$destination_code", $city_options)) ? $city_options["$destination_code"] : $destination_code;
+              $faretype = '';
+	      if ($info->FlightSegment[$index]->Fares->IsRefundable == 'true') {
+	        $faretype = 'Refundable'; 
+	      } 
+              else {
+	        $faretype = 'No Refunds';
+	      }
+	      $flight_details['linked_flight'][$linked_flight_info_index]['fare_rules'][] = get_farerules($info->FlightSegment[$index]->FareRules);
+              $flight_details['linked_flight'][$linked_flight_info_index]['faretype'][] = $faretype;
+              $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->departure);
+              $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->arrival);
+              $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);
+              $flight_details['linked_flight'][$linked_flight_info_index]['timeslot'][] = get_time_duration($journey_time);
+	      $flight_details['linked_flight'][$linked_flight_info_index]['depart_time_only'][] = date('H:i', strtotime($depart_time));
+              $flight_details['linked_flight'][$linked_flight_info_index]['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+              $flight_details['linked_flight'][$linked_flight_info_index]['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+             $via_stops = '';
+	    if ($info->FlightSegment[$index]->ViaStops == 0) {
+	      $via_stops = 'Non Stop';
+	    } 
+            else {
+	      $via_stops = $info->FlightSegment[$index]->ViaStops . ' Stop(s)';
+	    }
+	    $flight_details['linked_flight'][$linked_flight_info_index]['via_stops'][] = $via_stops;
+            $price = ($info->FlightSegment[$index]->Fares->FareAmount + $info->FlightSegment[$index]->Taxes)-$info->FlightSegment[$index]->Fares->DiscountAmount;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['basefare'][] = $info->FlightSegment[$index]->Fares->FareAmount;
+            $flight_details['linked_flight'][$linked_flight_info_index]['taxes'][] = $info->FlightSegment[$index]->Taxes;
+            $flight_details['linked_flight'][$linked_flight_info_index]['discount'][] = $info->FlightSegment[$index]->Fares->DiscountAmount;
+            $flight_details['linked_flight'][$linked_flight_info_index]['price'][] = $price;
+            $flight_details['linked_flight']['price'][] = $price; 
+            $flight_details['linked_flight'][$linked_flight_info_index]['Isrefundable'][] = $info->FlightSegment[$index]->Fares->IsRefundable; 
+           //drupal_set_message('<pre>'.print_r($info->FlightSegment[$index],true));
+           }
+           $linked_flight_info_index++;
+            //drupal_set_message('<hr>');     
+	   } 
+           else {
+     	    $flight_details['airline_name'][] = $info->FlightSegment->AirlineName;
+	    $flight_details['carrier_code'][] = $info->FlightSegment->carrierCode;
+	    $flight_details['flight_number'][] = $info->FlightSegment->flightNumber;
+            $origin_code = $info->FlightSegment->origin;
+            $destination_code = $info->FlightSegment->destination;
+	    $flight_details['origin'][] = (array_key_exists("$origin_code", $city_options)) ? $city_options["$origin_code"] : $destination_code;
+	    $flight_details['destination'][] =  (array_key_exists("$destination_code", $city_options)) ? $city_options["$destination_code"] : $destination_code;
+	    $faretype = '';
+	    if ($info->FlightSegment->Fares->IsRefundable == 'true') {
+	      $faretype = 'Refundable'; 
+	    } 
+            else {
+	      $faretype = 'No Refunds';
+	    }
+	    
+	    $flight_details['fare_rules'][] = get_farerules($info->FlightSegment->FareRules);
+	    
+	    $flight_details['faretype'][] = $faretype;
+	    
+	    $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment->departure);
+            $flight_details['depart_time_only'][] = date('H:i', strtotime($depart_time));
+	    
+	    $flight_details['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+	    
+	    $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment->arrival);
+            
+            $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);  
+	    $flight_details['timeslot'][] = get_time_duration($journey_time); 
+	    $flight_details['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+	    $via_stops = '';
+	    if ($info->FlightSegment->ViaStops == 0) {
+	      $via_stops = 'Non Stop';
+	    } 
+            else {
+	      $via_stops = $info->FlightSegment->ViaStops .' Stop(s)';
+	    }
+	    $flight_details['via_stops'][] = $via_stops;     
+	    
+	    $price = ($info->FlightSegment->Fares->FareAmount + $info->FlightSegment->Taxes)-$info->FlightSegment->Fares->DiscountAmount;
+	    $flight_details['price'][] = $price;
+            $flight_details['basefare'][] = $info->FlightSegment->Fares->FareAmount;
+            $flight_details['taxes'][] = $info->FlightSegment->Taxes;
+            $flight_details['discount'][] = $info->FlightSegment->Fares->DiscountAmount;
+            $flight_details['Isrefundable'][] = $info->FlightSegment->Fares->IsRefundable; 
+        }//if count($flight->FlightSegment)>0 else part here
+      }//inner foreach end here
+      $flight_details['flight_reference_id'][] = $flight->FlightReferenceId;
+    }//main foreach end here
+  }//if response success end here
+  $flight_details['price_min_filter'] = $price_min_filter;
+  $flight_details['price_max_filter'] = $price_max_filter;
+  $flight_details['time_min_filter'] = $time_min_filter;
+  $flight_details['time_max_filter'] = $time_max_filter;
+  $flight_details['refundable'] = $refundable;
+  if ($submitted['trip_type']=='R') {
+    $flight_details['selected_round_trip'] = 'yes'; 
+  }
+  if (isset($flight_details['price']) && count($flight_details['price'] > 0)) {
+    $minprice_direct = min($flight_details['price']);
+    $minprice_linked = min($flight_details['linked_flight']['price']);
+    $maxprice_direct = max($flight_details['price']);
+    $maxprice_linked = max($flight_details['linked_flight']['price']);
+    if ($minprice_linked < $minprice_direct) {
+      $minprice = $minprice_linked;
+    } 
+    else {
+      $minprice = $minprice_direct;
+    }
+    if ($maxprice_linked > $maxprice_direct) {
+      $maxprice = $maxprice_linked;
+    } 
+    else {
+      $maxprice = $maxprice_direct;
+    }
+  }
+  $output = "<span id='price_min_max' min='$minprice' max='$maxprice'></span>";
+  $output .= theme('show_flights', $flight_details);
+  print $output;
+  exit();
+}
+/*
+* Show available return flights based on search after customer click on "Select and show return" button
+*/
+function return_flights_show() {
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey); 
+  $city_options = _get_cities();  
+  $flight_params = array();
+  $flight_params['leaving_from'] = $city_options[$submitted['leaving_from']];
+  $flight_params['going_to'] = $city_options[$submitted['going_to']];
+  if ($submitted['departure_time']['date']=='' || empty($submitted['departure_time'])) {
+    $flight_params['departure_date'] = '';
+  } 
+  else {
+    $flight_params['departure_date'] = date('d-M-Y', strtotime($submitted['departure_time']));
+  }
+  if ($submitted['return_time']['date']=='' || empty($submitted['return_time'])) {
+    $flight_params['return_date'] = '';
+  } 
+  else {
+    $flight_params['return_date'] = date('d-M-Y', strtotime($submitted['return_time']));
+  }
+  //The list of available flights are displayed here via ajax
+   //place extra divs
+  return theme('return_flights_listing', $flight_params);
+}
+/**
+* Implementation of show return flights ajax callback page
+*/
+function ajax_callback_return_flights() {
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey); 
+  //Advanced Filter Variables from ajax callback
+  $no_stops_filter = '';
+  $refundable = '';
+  $airlines_prefered_filter = '';
+  $price_min_filter = '';
+  $price_max_filter = '';
+  $time_min_filter = '';
+  $time_max_filter = '';
+  if (isset($_GET['price_min'])) {
+    $price_min_filter = $_GET['price_min'];
+  }
+  if (isset($_GET['price_max'])) {
+    $price_max_filter = $_GET['price_max'];
+  }
+  if (isset($_GET['time_min'])) {
+    $time_min_filter = $_GET['time_min'];
+  }
+  if (isset($_GET['time_max'])) {
+    $time_max_filter = $_GET['time_max'];
+  }
+  if (isset($_GET['refundable'])) {
+    $refundable = $_GET['refundable'];
+  }
+  if (isset($_GET['no_stops'])) {
+    $no_stops_filter = $_GET['no_stops'];
+  }
+  if (isset($_GET['airlines_prefered'])) {
+    $airlines_prefered_filter = $_GET['airlines_prefered'];
+  }
+  if (isset($_GET['onward_fid'])) {
+    $onward_fid = $_GET['onward_fid'];
+  }
+  $xml = _get_flights($submitted, $no_stops_filter, $airlines_prefered_filter, $return_flights='Yes');
+  //Unique session id generated by API, used for further actions
+  $sessionID =  $xml->xpath('//soapHeader');
+  
+  //Returned body 
+  $returned = $xml->xpath('//soapBody/ns1getFlightSearchResultsResponse/ns1return');
+  
+  //parse the returned body xml string 
+  $newxml = simplexml_load_string($returned['0']);
+  
+  $city_options = _get_cities();
+
+  //$flight_details = get_flight_details_from_responsexml($newxml, $submitted, 'Return');
+  //Values pass to template file
+  $flight_details = array();
+  $flight_details['adults'] = $submitted['adults'];
+  $flight_details['children'] = $submitted['children'];
+  $flight_details['infants'] = $submitted['infants'];
+  $flight_details['leaving_from'] = $city_options[$submitted['leaving_from']];
+  $flight_details['going_to'] = $city_options[$submitted['going_to']];
+  if ($submitted['departure_time']['date'] == '' || empty($submitted['departure_time'])) {
+    $flight_details['departure_date'] = '';
+  } 
+  else {
+    $flight_details['departure_date'] = date('d-M-Y', strtotime($submitted['departure_time']));
+  }
+  if ($submitted['return_time']['date'] == '' || empty($submitted['return_time'])) {
+     $flight_details['return_date'] = '';
+  } 
+  else {
+    $flight_details['return_date'] = date('d-M-Y', strtotime($submitted['return_time']));
+  }
+  $flight_details['responsecode'] = $newxml->ResponseCode;
+  $flight_details['sessionID'] = $sessionID[0]->SessionId;
+  $linked_flight_info_index = 0;
+  //drupal_set_message('<pre>'.print_r($newxml,TRUE));
+  if ($newxml->ResponseCode == '200-success') {
+    foreach ($newxml->Return->flight as $flight) {
+      foreach ($flight->FlightSegments as $info) { //start
+        //drupal_set_message('Type:'.count($info->FlightSegment).'<pre>'.print_r($info,TRUE));	  
+        if (count($info->FlightSegment)>1) {
+	  for ($index=0; $index<count($info->FlightSegment); $index++) {
+	    $flight_details['linked_flight'][$linked_flight_info_index]['airline_name'][]=$info->FlightSegment[$index]->AirlineName;
+            $flight_details['linked_flight'][$linked_flight_info_index]['carrier_code'][] = $info->FlightSegment[$index]->carrierCode;
+            $flight_details['linked_flight'][$linked_flight_info_index]['flight_number'][] = $info->FlightSegment[$index]->flightNumber;
+            $origin_code = $info->FlightSegment[$index]->origin;
+            $destination_code = $info->FlightSegment[$index]->destination;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['origin'][] = $city_options["$origin_code"];
+            $flight_details['linked_flight'][$linked_flight_info_index]['destination'][] =  $city_options["$destination_code"];
+            $faretype = '';
+	    if ($info->FlightSegment[$index]->Fares->IsRefundable == 'true') {
+	      $faretype = 'Refundable'; 
+	    } 
+            else {
+	      $faretype = 'No Refunds';
+	    }
+	    $flight_details['linked_flight'][$linked_flight_info_index]['fare_rules'][] = get_farerules($info->FlightSegment[$index]->FareRules);
+            $flight_details['linked_flight'][$linked_flight_info_index]['faretype'][] = $faretype;
+            $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->departure);
+            $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->arrival);
+            $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);
+            $flight_details['linked_flight'][$linked_flight_info_index]['timeslot'][] = get_time_duration($journey_time);
+	    $flight_details['linked_flight'][$linked_flight_info_index]['depart_time_only'][] = date('H:i', strtotime($depart_time));
+            $flight_details['linked_flight'][$linked_flight_info_index]['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+            $flight_details['linked_flight'][$linked_flight_info_index]['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+	    $via_stops = '';
+	    if ($info->FlightSegment[$index]->ViaStops == 0) {
+	      $via_stops = 'Non Stop';
+	    } 
+            else {
+	      $via_stops = $info->FlightSegment[$index]->ViaStops .' Stop(s)';
+	    }
+	    $flight_details['linked_flight'][$linked_flight_info_index]['via_stops'][] = $via_stops;
+	    $price = ($info->FlightSegment[$index]->Fares->FareAmount + $info->FlightSegment[$index]->Taxes)-$info->FlightSegment[$index]->Fares->DiscountAmount;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['price'][] = $price;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['basefare'][] = $info->FlightSegment[$index]->Fares->FareAmount;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['taxes'][] = $info->FlightSegment[$index]->Taxes;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['discount'][] = $info->FlightSegment[$index]->Fares->DiscountAmount;
+	    $flight_details['linked_flight']['price'][] = $price;
+	    $flight_details['linked_flight'][$linked_flight_info_index]['Isrefundable'][] = $info->FlightSegment[$index]->Fares->IsRefundable; 
+	    //drupal_set_message('<pre>'.print_r($info->FlightSegment[$index],true));
+	    }
+	    $linked_flight_info_index++;
+            //drupal_set_message('<hr>');     
+	} 
+        else {
+     	  $flight_details['airline_name'][] = $info->FlightSegment->AirlineName;
+	  $flight_details['carrier_code'][] = $info->FlightSegment->carrierCode;
+	  $flight_details['flight_number'][] = $info->FlightSegment->flightNumber;
+          $origin_code = $info->FlightSegment->origin;
+          $destination_code = $info->FlightSegment->destination;
+	  $flight_details['origin'][] = $city_options["$origin_code"];
+	  $flight_details['destination'][] =  $city_options["$destination_code"];
+	  $faretype = '';
+	  if ($info->FlightSegment->Fares->IsRefundable == 'true') {
+	    $faretype = 'Refundable'; 
+	  } 
+          else {
+	    $faretype = 'No Refunds';
+	  }
+	  $flight_details['fare_rules'][] = get_farerules($info->FlightSegment->FareRules);
+	  $flight_details['faretype'][] = $faretype;
+	  $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment->departure);
+          $flight_details['depart_time_only'][] = date('H:i', strtotime($depart_time));
+	  $flight_details['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+	  $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment->arrival);
+          $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);  
+	  $flight_details['timeslot'][] = get_time_duration($journey_time); 
+	  $flight_details['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+	  $via_stops = '';
+	  if ($info->FlightSegment->ViaStops == 0) {
+	    $via_stops = 'Non Stop';
+	  } 
+          else {
+	     $via_stops = $info->FlightSegment->ViaStops . ' Stop(s)';
+	  }
+	  $flight_details['via_stops'][] = $via_stops;     
+	  $price = ($info->FlightSegment->Fares->FareAmount + $info->FlightSegment->Taxes)-$info->FlightSegment->Fares->DiscountAmount;
+	  $flight_details['price'][] = $price;
+          $flight_details['basefare'][] = $info->FlightSegment->Fares->FareAmount;
+          $flight_details['taxes'][] = $info->FlightSegment->Taxes;
+          $flight_details['discount'][] = $info->FlightSegment->Fares->DiscountAmount;
+          $flight_details['Isrefundable'][] = $info->FlightSegment->Fares->IsRefundable; 
+	  }//if count($flight->FlightSegment)>0 else part here
+	}//inner foreach end here
+	$flight_details['flight_reference_id'][] = $flight->FlightReferenceId;
+      }//main foreach end here
+   }//if response success end here 
+  $flight_details['price_min_filter'] = $price_min_filter;
+  $flight_details['price_max_filter'] = $price_max_filter;
+  $flight_details['time_min_filter'] = $time_min_filter;
+  $flight_details['time_max_filter'] = $time_max_filter;
+  $flight_details['refundable'] = $refundable;
+  $flight_details['onward_fid'] = $onward_fid;
+  if (isset($flight_details['price']) && count($flight_details['price'] > 0)) {
+    $minprice_direct = min($flight_details['price']);
+    $minprice_linked = min($flight_details['linked_flight']['price']);
+    $maxprice_direct = max($flight_details['price']);
+    $maxprice_linked = max($flight_details['linked_flight']['price']);
+    if ($minprice_linked < $minprice_direct) {
+      $minprice = $minprice_linked;
+    } 
+    else {
+      $minprice = $minprice_direct;
+    }
+    if ($maxprice_linked > $maxprice_direct) {
+      $maxprice = $maxprice_linked;
+    } 
+    else {
+      $maxprice = $maxprice_direct;
+    }
+  }
+  $output = "<span id='price_min_max' min='$minprice' max='$maxprice'></span>";
+  $output .= theme('show_return_flights', $flight_details);
+  print $output; 
+  exit();
+}    
+/**
+* Implemetation of Flights Reload functionality when select previous and next day filters
+*/
+function flights_reload() {
+  if (isset($_GET['departure_previus_day_filter'])) {
+    $depart_date = $_GET['departure_previus_day_filter'];
+    $prev_date = strtotime(date("Y-m-d", strtotime($depart_date)) . " -1 day");
+    $previous_date = date('Y-m-d', $prev_date); 
+    $search_params = explode('|', urldecode($_GET['searchkey']));
+    $search_params['3'] = $previous_date .' 00:00:00';
+    $altered_params = implode('|', $search_params);
+    $altered_search_params = urlencode($altered_params);
+    print drupal_to_js(array('data' => array('altered_search_params' => $altered_search_params), 'status' => TRUE));
+  }
+  if (isset($_GET['departure_next_day_filter'])) {
+    $depart_date = $_GET['departure_next_day_filter'];
+    $next_date = strtotime(date("Y-m-d", strtotime($depart_date)) . " +1 day");
+    $next_date_formated = date('Y-m-d', $next_date); 
+    $search_params = explode('|', urldecode($_GET['searchkey']));
+    $search_params['3'] = $next_date_formated .' 00:00:00';
+    $altered_params = implode('|', $search_params);
+    $altered_search_params = urlencode($altered_params);
+    print drupal_to_js(array('data' => array('altered_search_params' => $altered_search_params), 'status' => TRUE));
+  } 
+}
+/**
+* Implemetation of Flights Reload functionality when select previous and next day filters in Return flights
+*/
+function flights_reload_return() {
+  if (isset($_GET['return_previus_day_filter'])) {
+    $return_date = $_GET['return_previus_day_filter'];
+    $prev_date = strtotime(date("Y-m-d", strtotime($return_date)) . " -1 day");
+    $previous_date = date('Y-m-d', $prev_date); 
+    $search_params = explode('|', urldecode($_GET['searchkey']));
+    $search_params['4'] = $previous_date .' 00:00:00';
+    $altered_params = implode('|', $search_params);
+    $altered_search_params = urlencode($altered_params);
+    print drupal_to_js(array('data' => array('altered_search_params' => $altered_search_params), 'status' => TRUE)); 
+  }
+  if (isset($_GET['return_next_day_filter'])) {
+    $return_date = $_GET['return_next_day_filter'];
+    $next_date = strtotime(date("Y-m-d", strtotime($return_date)) . " +1 day");
+    $next_date_formated = date('Y-m-d', $next_date); 
+    $search_params = explode('|', urldecode($_GET['searchkey']));
+    $search_params['4'] = $next_date_formated .' 00:00:00';
+    $altered_params = implode('|', $search_params);
+    $altered_search_params = urlencode($altered_params);
+    print drupal_to_js(array('data' => array('altered_search_params' => $altered_search_params), 'status' => TRUE));
+  } 
+}
+/*
+* Implementation of Get Onward Flights
+*/
+function _get_flights($submitted, $no_stops_filter = '', $airlines_prefered_filter = '', $return_trip = 'no') {
+  $trip_type = 'O';
+  $return_time = '';
+  if ($return_trip == 'no') {
+    $trip_type = 'O'; //O: one way R: round
+  } 
+  else {
+    $trip_type = 'R'; //O: one way R: round
+    if (!empty($submitted['return_time']) && !is_array($submitted['return_time'])) {
+      $return_time = str_replace(' ', 'T', $submitted['return_time']);
+    }
+  }
+  $leaving_from = $submitted['leaving_from'];
+  $going_to = $submitted['going_to'];
+  $departure_time = '';
+  if (!empty($submitted['departure_time'])) {
+    $departure_time = str_replace(' ', 'T', $submitted['departure_time']);
+  }
+  $cabin_class = $submitted['cabin_class'];
+  $adults = $submitted['adults'];
+  $children = $submitted['children'];
+  $infants = $submitted['infants'];
+  $children = $submitted['children'];
+  $children = $submitted['children'];
+  //if customer selects direct flights only, then need to pass 0 to API, otherwise 1 for all flights
+  if ($no_stops_filter == '') {
+    $direct_flights_only = 1;
+  }
+  else {
+    $direct_flights_only = $no_stops_filter;
+  }
+  $night_flights = 'false';
+  if ($airlines_prefered_filter == '') {
+     $airlines = '';
+     $getairlines = _airlines(); 
+     foreach ($getairlines as $key => $value) {
+       $airlines .= $key .',';
+     }
+     $airlines = substr($airlines, 0, -1);  
+  } 
+  else {
+    $airlines = $airlines_prefered_filter; 
+  }
+  //define method arguments
+  //username: orienstravels  password: 0r1ence5
+  $soapheaders = '<AuthenticationToken xmlns="http://user.mynamesspace.com"><Username>'. API_USERNAME .'</Username><Password>'. API_PASSWORD .'</Password></AuthenticationToken>';
+  $params = array('param0' => "<MMT_FlightSearchRQ xmlns='http://search.elements.flight.webservices.mmt.com'>
+  <TripType>$trip_type</TripType>
+  <OriginLocation>$leaving_from</OriginLocation>
+  <DestinationLocation>$going_to</DestinationLocation>
+  <DepartureTime>$departure_time</DepartureTime>
+  <ReturnDateTime>$return_time</ReturnDateTime>
+  <Class>$cabin_class</Class>
+  <NoofAdults>$adults</NoofAdults>
+  <NoofChildren>$children</NoofChildren>
+  <NoofInfant>$infants</NoofInfant>
+  <NoofStops>$direct_flights_only</NoofStops>
+  <ResidentOfIndia>true</ResidentOfIndia> 
+  <DepartureDateRange>
+  <from /> 
+  <to /> 
+  </DepartureDateRange>
+  <ReturnDateRange>
+  <from /> 
+  <to /> 
+  </ReturnDateRange>
+  <LCCStatus /> 
+  <NightFlight>$night_flights</NightFlight> 
+  <AirlinePref>$airlines</AirlinePref>
+  </MMT_FlightSearchRQ>");
+  $response_xml = call_service('getFlightSearchResults', $soapheaders, $params);
+  return  $response_xml;  
+}
+/**
+*Implementation of selected flight details page 
+*/
+function flight_selected() {
+  $session_id = $_GET['sessID'];
+  $onward_flight_reference_id = $_GET['onward_fid'];
+  $return_flight_reference_id = $_GET['return_fid'];
+  
+  $soapheaders = "<AuthenticationToken xmlns='http://user.mynamesspace.com'>
+  <SessionId xmlns='http://user.mynamesspace.com'>$session_id</SessionId>
+  </AuthenticationToken>";
+  $params = array('param0' => "<?xml version='1.0' encoding='UTF-8'?>
+  <MMTFlightRecheckRQ xmlns='http://recheck.elements.flight.webservices.mmt.com'>
+  <Onward><FlightReferenceId>$onward_flight_reference_id</FlightReferenceId></Onward><Return><FlightReferenceId>$return_flight_reference_id</FlightReferenceId></Return></MMTFlightRecheckRQ>");
+  $xml = call_service('recheckFlightRequest', $soapheaders, $params);
+
+  $output .= "<input type='text' name='terms_conditions'><b>Continue without Registering</b><br />
+             In a hurry? Proceed to pay without registering<br />";
+  $output .= "<b><a href='/flights/continuePayment'>Continue without registering</a></b>";
+   
+  //Unique session id generated by API, used for further actions
+  $sessionID =  $xml->xpath('//soapHeader');
+  
+  //Returned body 
+  $returned = $xml->xpath('//soapBody/ns1recheckFlightRequestResponse/ns1return');
+  
+  //parse the returned body xml string 
+  $newxml = simplexml_load_string($returned['0']);
+  
+  $flight_details = array();
+  $flight_details['responsecode'] = $newxml->ResponseCode;
+  $flight_details['sessionID'] = $sessionID[0]->SessionId;  
+  if ($newxml->ResponseCode == '200-success') {
+    foreach ($newxml->Onward as $flight) {
+      $flight_details['onward_flight_reference_id'] = $flight[0]->FlightReferenceID;
+      $flight_details['onward_seat_available'] = $flight[0]->SeatAvailable;
+      $flight_details['onward_FareChanged'] = $flight[0]->FareChanged;
+      $flight_details['onward_taxes'] = $flight[0]->Taxes;
+      $flight_details['onward_FareAmount'] = $flight[0]->Fares->FareAmount;
+      $flight_details['onward_Discount'] = $flight[0]->Fares->Discount;
+    }
+    foreach ($newxml->Return as $flight) {
+      $flight_details['return_flight_reference_id'] = $flight[0]->FlightReferenceID;
+      $flight_details['return_seat_available'] = $flight[0]->SeatAvailable;
+      $flight_details['return_FareChanged'] = $flight[0]->FareChanged;
+      $flight_details['return_taxes'] = $flight[0]->Taxes;
+      $flight_details['return_FareAmount'] = $flight[0]->Fares->FareAmount;
+      $flight_details['return_Discount'] = $flight[0]->Fares->Discount;
+    }
+  }
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey);
+  //Advanced Filter Variables from ajax callback
+  $no_stops_filter = '';
+  $airlines_prefered_filter = '';
+  if ($submitted['trip_type']=='R') {
+    $return_trip = 'yes';
+  } 
+  else {
+    $return_trip = 'no';
+  }
+  $selected_flights_xml = _get_flights($submitted, $no_stops_filter, $airlines_prefered_filter, $return_trip);
+  
+  //Returned body 
+  $selected_flights_returned = $selected_flights_xml->xpath('//soapBody/ns1getFlightSearchResultsResponse/ns1return');
+  
+  //parse the returned body xml string 
+  $selected_newxml = simplexml_load_string($selected_flights_returned['0']);
+  
+  $selected_city_options = _get_cities();
+
+  //Values pass to template file
+  $selected_onward_flight_details = _get_selected_flight_details($selected_newxml, $onward_flight_reference_id, $flight_type = 'onward');
+  $selected_return_flight_details = _get_selected_flight_details($selected_newxml, $return_flight_reference_id, $flight_type = 'return');
+  //$selected_onward_flight_details_serialized =  serialize($selected_onward_flight_details);
+  //$selected_onward_flight_details_serialized = htmlentities($selected_onward_flight_details_serialized,ENT_QUOTES);
+  //$selected_return_flight_details_serialized =  serialize($selected_return_flight_details);
+  //$selected_return_flight_details_serialized = htmlentities($selected_return_flight_details_serialized,ENT_QUOTES);
+  //drupal_set_message('<pre>'.print_r($selected_onward_flight_details,TRUE));
+  if(isset($selected_onward_flight_details['Onward']['linked_flight'])) {
+    for ($info_index=0; $info_index < count($selected_onward_flight_details['Onward']['linked_flight']['0']['airline_name']); $info_index++) { 
+      $onward_airline_name = $selected_onward_flight_details['Onward']['linked_flight']['0']['airline_name'][$info_index];
+      $onward_carrier_code = $selected_onward_flight_details['Onward']['linked_flight']['0']['carrier_code'][$info_index];
+      $onward_flight_number = $selected_onward_flight_details['Onward']['linked_flight']['0']['flight_number'][$info_index];
+      $onward_origin = $selected_onward_flight_details['Onward']['linked_flight']['0']['origin'][$info_index];
+      $onward_destination = $selected_onward_flight_details['Onward']['linked_flight']['0']['destination'][$info_index];
+      $onward_dept_time = $selected_onward_flight_details['Onward']['linked_flight']['0']['depart_time'][$info_index];
+      $onward_arrival_time = $selected_onward_flight_details['Onward']['linked_flight']['0']['arrival_time'][$info_index];
+      $onward_basefare = $selected_onward_flight_details['Onward']['linked_flight']['0']['basefare'][$info_index];
+      $onward_taxes = $selected_onward_flight_details['Onward']['linked_flight']['0']['taxes'][$info_index];
+      $onward_discount = $selected_onward_flight_details['Onward']['linked_flight']['0']['discount'][$info_index]; 
+      $onward_flight_details .= $onward_airline_name.'!!'.$onward_carrier_code.'!!'.$onward_flight_number.'!!'.$onward_origin.'!!'.$onward_destination.'!!'.$onward_dept_time.'!!'.$onward_arrival_time.'!!'.$onward_basefare.'!!'.$onward_taxes.'!!'.$onward_discount.'&$&';
+   }
+  }
+  else {
+    $onward_airline_name = $selected_onward_flight_details['Onward']['airline_name']['0'];
+    $onward_carrier_code = $selected_onward_flight_details['Onward']['carrier_code']['0'];
+    $onward_flight_number = $selected_onward_flight_details['Onward']['flight_number']['0'];
+    $onward_origin = $selected_onward_flight_details['Onward']['origin']['0'];
+    $onward_destination = $selected_onward_flight_details['Onward']['destination']['0'];
+    $onward_dept_time = $selected_onward_flight_details['Onward']['depart_time']['0'];
+    $onward_arrival_time = $selected_onward_flight_details['Onward']['arrival_time']['0'];
+    $onward_basefare = $selected_onward_flight_details['Onward']['basefare']['0'];
+    $onward_taxes = $selected_onward_flight_details['Onward']['taxes']['0'];
+    $onward_discount = $selected_onward_flight_details['Onward']['discount']['0'];
+    $onward_flight_details = $onward_airline_name.'!!'.$onward_carrier_code.'!!'.$onward_flight_number.'!!'.$onward_origin.'!!'.$onward_destination.'!!'.$onward_dept_time.'!!'.$onward_arrival_time.'!!'.$onward_basefare.'!!'.$onward_taxes.'!!'.$onward_discount;
+  }
+  if(isset($selected_return_flight_details['Return']['linked_flight'])) {
+    for ($info_index=0; $info_index < count($selected_return_flight_details['Return']['linked_flight']['0']['airline_name']); $info_index++)    { 
+      $return_airline_name = $selected_return_flight_details['Return']['linked_flight']['0']['airline_name'][$info_index];
+      $return_carrier_code = $selected_return_flight_details['Return']['linked_flight']['0']['carrier_code'][$info_index];
+      $return_flight_number = $selected_return_flight_details['Return']['linked_flight']['0']['flight_number'][$info_index];
+      $return_origin = $selected_return_flight_details['Return']['linked_flight']['0']['origin'][$info_index];
+      $return_destination = $selected_return_flight_details['Return']['linked_flight']['0']['destination'][$info_index];
+      $return_dept_time = $selected_return_flight_details['Return']['linked_flight']['0']['depart_time'][$info_index];
+      $return_arrival_time = $selected_return_flight_details['Return']['linked_flight']['0']['arrival_time'][$info_index];
+      $return_basefare = $selected_return_flight_details['Return']['linked_flight']['0']['basefare'][$info_index];
+      $return_taxes = $selected_return_flight_details['Return']['linked_flight']['0']['taxes'][$info_index];
+      $return_discount = $selected_return_flight_details['Return']['linked_flight']['0']['discount'][$info_index]; 
+      $return_flight_details .= $return_airline_name.'!!'.$return_carrier_code.'!!'.$return_flight_number.'!!'.$return_origin.'!!'.$return_destination.'!!'.$return_dept_time.'!!'.$return_arrival_time.'!!'.$return_basefare.'!!'.$return_taxes.'!!'.$return_discount.'&$&';
+   }
+  }
+  else {
+    $return_airline_name = $selected_return_flight_details['Return']['airline_name']['0'];
+    $return_carrier_code = $selected_return_flight_details['Return']['carrier_code']['0'];
+    $return_flight_number = $selected_return_flight_details['Return']['flight_number']['0'];
+    $return_origin = $selected_return_flight_details['Return']['origin']['0'];
+    $return_destination = $selected_return_flight_details['Return']['destination']['0'];
+    $return_dept_time = $selected_return_flight_details['Return']['depart_time']['0'];
+    $return_arrival_time = $selected_return_flight_details['Return']['arrival_time']['0'];
+    $return_basefare = $selected_return_flight_details['Return']['basefare']['0'];
+    $return_taxes = $selected_return_flight_details['Return']['taxes']['0'];
+    $return_discount = $selected_return_flight_details['Return']['discount']['0'];
+    $return_flight_details = $return_airline_name.'!!'.$return_carrier_code.'!!'.$return_flight_number.'!!'.$return_origin.'!!'.$return_destination.'!!'.$return_dept_time.'!!'.$return_arrival_time.'!!'.$return_basefare.'!!'.$return_taxes.'!!'.$return_discount;
+  }
+ 
+ //return $selected_onward_flight_details['Onward']['airline_name']['0'];
+  db_query("insert into {flights_selected} (search_sessionID, onward_flight_info, return_flight_info, searchkey) values('$session_id','$onward_flight_details','$return_flight_details','$searchkey')");
+  return theme('review_travel_details', $flight_details, $selected_onward_flight_details, $selected_return_flight_details, $submitted);
+}
+/**
+* Get Selected flights information
+**/
+function _get_selected_flight_details($newxml, $flight_refID, $flight_type = 'onward') {
+  $flight_details = array();
+  if ($flight_type == 'onward') {
+    $extra_index = 'Onward';
+  } 
+  else {
+    $extra_index = 'Return';
+  }
+  $city_options = _get_cities();
+  $linked_flight_info_index = 0;
+  if ($newxml->ResponseCode == '200-success') {
+    foreach ($newxml->$extra_index->flight as $flight) {
+      if ($flight->FlightReferenceId == $flight_refID) {
+        foreach ($flight->FlightSegments as $info) { //start
+ 	  if (count($info->FlightSegment)>1) { //means linked flight
+	    for ($index=0; $index<count($info->FlightSegment); $index++) {
+	      $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['airline_name'][]=$info->FlightSegment[$index]->AirlineName;
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['carrier_code'][] = $info->FlightSegment[$index]->carrierCode;
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['flight_number'][] = $info->FlightSegment[$index]->flightNumber;
+              $origin_code = $info->FlightSegment[$index]->origin;
+              $destination_code = $info->FlightSegment[$index]->destination;
+	      $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['origin'][] = (array_key_exists("$origin_code", $city_options)) ? $city_options["$origin_code"] : $origin_code;
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['destination'][] =  (array_key_exists("$destination_code", $city_options)) ? $city_options["$destination_code"] : $destination_code;
+              $faretype = '';
+	      if ($info->FlightSegment[$index]->Fares->IsRefundable == 'true') {
+	        $faretype = 'Refundable'; 
+	      } 
+              else {
+	        $faretype = 'No Refunds';
+	      }
+	      $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['fare_rules'][] = get_farerules($info->FlightSegment[$index]->FareRules);
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['faretype'][] = $faretype;
+              $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->departure);
+              $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->arrival);
+              $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['timeslot'][] = get_time_duration($journey_time);
+	      $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['depart_time_only'][] = date('H:i', strtotime($depart_time));
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+              $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+             $via_stops = '';
+	    if ($info->FlightSegment[$index]->ViaStops == 0) {
+	      $via_stops = 'Non Stop';
+	    } 
+            else {
+	      $via_stops = $info->FlightSegment[$index]->ViaStops .' Stop(s)';
+	    }
+	    $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['via_stops'][] = $via_stops;
+            $price = ($info->FlightSegment[$index]->Fares->FareAmount + $info->FlightSegment[$index]->Taxes)-$info->FlightSegment[$index]->Fares->DiscountAmount;
+	    $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['basefare'][] = $info->FlightSegment[$index]->Fares->FareAmount;
+            $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['taxes'][] = $info->FlightSegment[$index]->Taxes;
+            $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['discount'][] = $info->FlightSegment[$index]->Fares->DiscountAmount;
+            $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['price'][] = $price;
+            $flight_details[$extra_index]['linked_flight'][$linked_flight_info_index]['Isrefundable'][] = $info->FlightSegment[$index]->Fares->IsRefundable; 
+           //drupal_set_message('<pre>'.print_r($info->FlightSegment[$index],true));
+           }
+           $linked_flight_info_index++;
+            
+	   } 
+           else {
+     	    $flight_details[$extra_index]['airline_name'][] = $info->FlightSegment->AirlineName;
+	    $flight_details[$extra_index]['carrier_code'][] = $info->FlightSegment->carrierCode;
+	    $flight_details[$extra_index]['flight_number'][] = $info->FlightSegment->flightNumber;
+            $origin_code = $info->FlightSegment->origin;
+            $destination_code = $info->FlightSegment->destination;
+	    $flight_details[$extra_index]['origin'][] = (array_key_exists("$origin_code", $city_options)) ? $city_options["$origin_code"] : $destination_code;
+	    $flight_details[$extra_index]['destination'][] =  (array_key_exists("$destination_code", $city_options)) ? $city_options["$destination_code"] : $destination_code;
+	    $faretype = '';
+	    if ($info->FlightSegment->Fares->IsRefundable == 'true') {
+	      $faretype = 'Refundable'; 
+	    } 
+            else {
+	      $faretype = 'No Refunds';
+	    }
+	    
+	    $flight_details[$extra_index]['fare_rules'][] = get_farerules($info->FlightSegment->FareRules);
+	    
+	    $flight_details[$extra_index]['faretype'][] = $faretype;
+	    
+	    $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment->departure);
+            $flight_details[$extra_index]['depart_time_only'][] = date('H:i', strtotime($depart_time));
+	    
+	    $flight_details[$extra_index]['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+	    
+	    $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment->arrival);
+            
+            $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);  
+	    $flight_details[$extra_index]['timeslot'][] = get_time_duration($journey_time); 
+	    $flight_details[$extra_index]['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+	    $via_stops = '';
+	    if ($info->FlightSegment->ViaStops == 0) {
+	      $via_stops = 'Non Stop';
+	    } 
+            else {
+	      $via_stops = $info->FlightSegment->ViaStops .' Stop(s)';
+	    }
+	    $flight_details[$extra_index]['via_stops'][] = $via_stops;     
+	
+            $flight_details[$extra_index]['basefare'][] = $info->FlightSegment->Fares->FareAmount;
+            $flight_details[$extra_index]['taxes'][] = $info->FlightSegment->Taxes;
+            $flight_details[$extra_index]['discount'][] = $info->FlightSegment->Fares->DiscountAmount;
+
+	    $price = ($info->FlightSegment->Fares->FareAmount + $info->FlightSegment->Taxes)-$info->FlightSegment->Fares->DiscountAmount;
+	    $flight_details[$extra_index]['price'][] = $price;
+            $flight_details[$extra_index]['Isrefundable'][] = $info->FlightSegment->Fares->IsRefundable; 
+        }//if count($flight->FlightSegment)>0 else part here
+      }//inner foreach end here
+     }//if onward flight reference id end here
+      //$flight_details['flight_reference_id'][] = $flight->FlightReferenceId;
+   }//main foreach end here
+  }//if response success end here
+  return $flight_details;
+}  
+/**
+*Implementation of collecting traveller info page
+*/
+function collect_traveller_info_page() {
+  $searchkey = $_GET['searchkey'];
+  $sessionID = $_GET['sessID'];
+  $submitted = _get_search_parameters($searchkey); 
+  $city_options = _get_cities();
+  $leaving_from = $city_options[$submitted['leaving_from']];
+  $going_to = $city_options[$submitted['going_to']];
+  $departure_date = date('d M Y', strtotime($submitted['departure_time']));
+  if ($submitted['return_time']['date'] == '' || empty($submitted['return_time'])) {
+    $return_date = '';
+  } 
+  else {
+    $return_date = date('d-M-Y', strtotime($submitted['return_time']));
+  }
+  $form = array();
+  $form['message'] = array(
+    '#type' => 'item',
+    '#title' => 'Now that you have selected your flights, we require passenger, payment and delivery details.',
+  );
+  $adult_title_options = array(
+    'Mr' => 'Mr',
+    'Mrs' => 'Mrs',
+    'Ms' => 'Ms',
+    'Miss' => 'Miss',
+  );
+  $children_title_options = array(
+    'Master' => 'Master',
+    'Miss' => 'Miss',
+  );
+  $adult_age_options = array(
+    '' => t('Select')
+  );
+  for ($adult_age_index=12; $adult_age_index<=70; $adult_age_index++) {
+    $adult_age_options[$adult_age_index] = $adult_age_index .' yr';
+  }
+  $children_age_options = array(
+    '' => t('Select')
+  );
+  for ($children_age_index=2; $children_age_index<=11; $children_age_index++) {
+    $children_age_options[$children_age_index] = $children_age_index .' yr';
+  }
+  $adult_age_options['71'] = '>70 yr';
+  for ($adult_limit=1; $adult_limit <= $submitted['adults']; $adult_limit++) {
+    $form['adults_sno_'. $adult_limit] = array(
+      '#type' => 'item',
+      '#title' => 'Adult '. $adult_limit,
+    ); 
+    $form['adult_title_'. $adult_limit] = array(
+      '#type' => 'select',
+      '#title' => t('Title'),
+      '#required' => TRUE,
+      '#options' => $adult_title_options,
+    );
+    $form['adult_firstname_'. $adult_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('First Name'),
+      '#required' => TRUE,
+    );
+    $form['adult_middlename_'. $adult_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('Middle Name'),
+      //'#required' => TRUE,
+    );
+    $form['adult_lastname_'. $adult_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('Last name/Initial'),
+      '#required' => TRUE,
+    );
+    $form['adult_age_'. $adult_limit] = array(
+      '#type' => 'select',
+      '#title' => t('Age'),
+      '#options' => $adult_age_options,
+      '#required' => TRUE,
+    ); 
+  }
+  for ($children_limit=1; $children_limit <= $submitted['children']; $children_limit++) {
+    $form['childrens_sno_'. $children_limit] = array(
+       '#type' => 'item',
+        '#title' => 'children '. $children_limit,
+    );
+    $form['children_title_'. $children_limit] = array(
+      '#type' => 'select',
+      '#title' => t('Title'),
+      '#required' => TRUE,
+      '#options' => $children_title_options,
+    );
+    $form['children_firstname_'. $children_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('First Name'),
+      '#required' => TRUE,
+    );
+    $form['children_middlename_'. $children_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('Middle Name'),
+      //'#required' => TRUE,
+    );
+    $form['children_lastname_'. $children_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('Last name/Initial'),
+      '#required' => TRUE,
+    );
+    $form['children_age_'. $children_limit] = array(
+      '#type' => 'select',
+      '#title' => t('Age'),
+      '#options' => $children_age_options,
+      '#required' => TRUE,
+    );
+  }
+  for ($infants_limit=1; $infants_limit <= $submitted['infants']; $infants_limit++) {
+    $form['infants_sno_'. $infants_limit] = array(
+       '#type' => 'item',
+       '#title' => 'Infants '. $infants_limit,
+    );
+    $form['infants_title_'. $infants_limit] = array(
+      '#type' => 'select',
+      '#title' => t('Title'),
+      '#required' => TRUE,
+      '#options' => $children_title_options,
+    );
+    $form['infants_firstname_'. $infants_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('First Name'),
+      '#required' => TRUE,
+    );
+    $form['infants_middlename_'. $infants_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('Middle Name'),
+      //'#required' => TRUE,
+    );
+    $form['infants_lastname_'. $infants_limit] = array(
+      '#type' => 'textfield',
+      '#title' => t('Last name/Initial'),
+      '#required' => TRUE,
+    );
+    $form['infants_age_'. $infants_limit] = array(
+      '#type' => 'select',
+      '#title' => t('Age'),
+      '#options' => array(
+        '0' => '0 yr',
+        '1' => '1 yr',
+        '2' => '2 yr',
+       ),
+      '#required' => TRUE,
+    );
+  }
+  $form['primary_contact_person'] = array(
+    '#type' => 'item',
+    '#title' => t('Primary Contact Person'),
+  );  
+  $form['primary_contact_title'] = array(
+    '#type' => 'select',
+    '#title' => t('Title'),
+    '#required' => TRUE,
+    '#options' => array_merge($adult_title_options, $children_title_options),
+  );
+  $form['primary_contact_firstname'] = array(
+    '#type' => 'textfield',
+    '#title' => t('First Name'),
+    '#required' => TRUE,
+  );
+  $form['primary_contact_middlename'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Middle Name'),     
+  );
+  $form['primary_contact_lastname'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Last name/Initial'),
+    '#required' => TRUE,
+  );  
+  $form['primary_contact_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email Address'),
+    '#required' => TRUE,
+  );
+  $form['primary_contact_email_confirm'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Confirm Email'),
+    '#required' => TRUE,
+  );
+  $phone_country_codes = array(
+    '61' => t('Australia (+61)'),
+    '973' => t('Canada (+973)'),
+    '86' => t('China (+86)'),
+    '91' => t('Indian (+91)'),
+    '977' => t('Nepal (+977)'),
+    '65' => t('Singapore (+65)'),
+    '971' => t('United Arab Emirates (+971)'),   
+    '44' => t('United Kingdom (+44)'),
+    '1' => t('United States (+1)'),
+    '000' => t('Others'),
+  );
+  $form['primary_contact_country_code'] = array(
+    '#type' => 'select',
+    '#title' => t('Country Code'),
+    '#required' => TRUE,
+    '#options' => $phone_country_codes,
+  );
+  $form['primary_contact_mobile'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Mobile Number'),
+    '#required' => TRUE,
+  );
+  $form['payment_details'] = array(
+    '#type' => 'item',
+    '#title' => t('Payment Details'),
+  );
+  $form['leaving_from'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $leaving_from,
+  );
+  $form['going_to'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $going_to,
+  );
+  $form['departure_date'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $departure_date,
+  );
+  $form['return_date'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $return_date,
+  );
+  $form['no_adults'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $submitted['adults'],
+  );
+  $form['no_children'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $submitted['children'],
+  );
+  $form['no_infants'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $submitted['infants'],
+  );
+  $form['sessionID'] = array(
+    '#type' => 'hidden',
+    '#title' => t(''),
+    '#default_value' => $sessionID,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Book'), 
+  );
+  $form['#validate'][] = 'collect_travellerinfo_validate';
+  return $form;
+}
+/* Implementation of collect traveler info validate*/
+function collect_travellerinfo_validate($form, &$form_state) {
+  $email_address = $form_state['values']['primary_contact_email'];
+  $confirm_email_address = $form_state['values']['primary_contact_email_confirm'];
+  if (strlen(trim($email_address)) > 0) {
+    if (!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email_address)) {
+     form_set_error('primary_contact_email', t('Contact email address is not valid.'));
+    }
+  }
+  if (strlen(trim($confirm_email_address)) > 0) {
+    if ($confirm_email_address != $email_address) {
+     form_set_error('primary_contact_email_confirm', t("Confirm email doesn't match with contact email"));
+    }
+  }
+}
+/**
+* Implementation of collect traveller info page values
+*/
+function collect_traveller_info_page_submit(&$form , &$form_state) {
+  //Store travellers information into database
+  $searchkey = $_GET['searchkey'];
+  $submitted = _get_search_parameters($searchkey); 
+  $node = new stdClass();
+  $node->type = 'flight_tickets';
+  $node->title = 'Test Booking';
+  $node->uid = 0;
+  for ($adult_limit = 1; $adult_limit <= $submitted['adults']; $adult_limit++) {
+    $node->field_flight_adult_title[]['value'] = $form_state['values']['adult_title_'. $adult_limit];
+    $node->field_flight_adult_firstname[]['value'] = $form_state['values']['adult_firstname_'. $adult_limit];
+    $node->field_flight_adult_middlename[]['value'] = $form_state['values']['adult_middlename_'. $adult_limit]; 
+    $node->field_flight_adult_lastname[]['value'] = $form_state['values']['adult_lastname_'. $adult_limit];
+    $node->field_flight_adult_age[]['value'] = $form_state['values']['adult_age_'. $adult_limit];
+  }
+  for ($children_limit = 1; $children_limit <= $submitted['children']; $children_limit++) {
+    $node->field_flight_children_title[]['value'] = $form_state['values']['children_title_'. $children_limit];
+    $node->field_flight_children_firstname[]['value'] = $form_state['values']['children_firstname_'. $children_limit];
+    $node->field_flight_children_middlename[]['value'] = $form_state['values']['children_middlename_'. $children_limit];
+    $node->field_flight_children_lastname[]['value'] = $form_state['values']['children_lastname_'. $children_limit];
+    $node->field_flight_children_age[]['value'] = $form_state['values']['children_age_'. $children_limit];
+  }
+  for ($infants_limit = 1; $infants_limit <= $submitted['infants']; $infants_limit++) {
+    $node->field_flight_infant_title[]['value'] = $form_state['values']['infants_title_'. $infants_limit];
+    $node->field_flight_infant_firstname[]['value'] = $form_state['values']['infants_firstname_'. $infants_limit];
+    $node->field_flight_infant_middlename[]['value'] = $form_state['values']['infants_middlename_'. $infants_limit];
+    $node->field_flight_infant_lastname[]['value'] = $form_state['values']['infants_lastname_'. $infants_limit];
+    $node->field_flight_infant_age[]['value'] = $form_state['values']['infants_age_'. $infants_limit];
+  }
+  $node->field_flight_contact_title[]['value'] = $form_state['values']['primary_contact_title'];
+  $node->field_flight_contact_firstname[]['value'] = $form_state['values']['primary_contact_firstname'];
+  $node->field_flight_contact_middlename[]['value'] = $form_state['values']['primary_contact_middlename'];
+  $node->field_flight_contact_lastname[]['value'] = $form_state['values']['primary_contact_lastname'];
+  $node->field_flight_contact_email[]['value'] = $form_state['values']['primary_contact_email'];
+  $node->field_flight_contact_mobile[]['value'] = $form_state['values']['primary_contact_country_code'] . $form_state['values']['primary_contact_mobile'];
+  $node->field_flight_journey_from[]['value'] = $form_state['values']['leaving_from'];
+  $node->field_flight_journey_to[]['value'] = $form_state['values']['going_to'];
+  $node->field_flight_journey_dept_date[]['value'] = $form_state['values']['departure_date'];
+  $node->field_flight_journey_return_date[]['value'] = $form_state['values']['return_date'];
+  $node->field_flight_journey_adults[]['value'] = $form_state['values']['no_adults'];
+  $node->field_flight_journey_children[]['value'] = $form_state['values']['no_children'];
+  $node->field_flight_journey_infants[]['value'] = $form_state['values']['no_infants'];
+  $node->field_flight_sessionid[]['value'] = $form_state['values']['sessionID'];
+  node_save($node);
+  drupal_set_message('Your Booking Is Successfull...');
+}
+/**
+* Implementation of get cities method, it holds all the city names and city code
+*/
+function _get_cities() {
+  $city_options_frequent = array(
+    '0' => '---------------',
+    'BLR' => 'Bangalore',
+    'MAA' => 'Chennai',
+    'DEL' => 'New Delhi',
+    'GOI' => 'Goa',
+    'HYD' => 'Hyderabad',
+    'CCU' => 'Kolkata',
+    'BOM' => 'Mumbai',
+    'PNQ' => 'Pune',
+  );
+  $city_options_all = array(
+    '0' => '---------------',
+    'IXA' => 'Agartala',
+    'AGX' => 'Agatti Island',
+    'AGR' => 'Agra',
+    'AMD' => 'Ahmedabad',
+    'IXD' => 'Allahabad',
+    'ATQ' => 'Amristar',
+    'IXU' => 'Aurangabad',
+    'IXB' => 'Bagdogra',
+    'IXG' => 'Balgaum',
+    'BLR' => 'Bangalore',
+    'BHU' => 'Bhavnagar',
+    'BHO' => 'Bhopal',
+    'BBI' => 'Bhubaneshwar',
+    'BHJ' => 'Bhuj',
+    'CCJ' => 'Calicut',
+    'IXG' => 'Chandigarh',
+    'MAA' => 'Chennai',
+    'COK' => 'Cochin',
+    'CJB' => 'Coimbatore',
+    'DIB' => 'Dibrugarh',
+    'DIU' => 'Diu',
+    'GOI' => 'Goa',
+    'GAU' => 'Guwahati',
+    'GWL' => 'Gwalior',
+    'HBX' => 'Hubli',
+    'HYD' => 'Hyderabad',
+    'IMF' => 'Imphal',
+    'INR' => 'Indore',
+    'JAI' => 'Jaipur',
+    'IXJ' => 'Jammu',
+    'JGA' => 'Jamnagar',
+    'JDH' => 'Jodhpur',
+    'IHX' => 'Kailashahar',
+    'IXH' => 'Kailashahar',
+    'KNU' => 'Kanpur',
+    'HJR' => 'Khajuraho',
+    'CCU' => 'Kolkata',
+    'KTU' => 'Kota',
+    'IXL' => 'Leh',
+    'LKO' => 'Lucknow',
+    'LUH' => 'Ludhiana',
+    'IXM' => 'Madurai',
+    'IXE' => 'Mangalore',
+    'BOM' => 'Mumbai',
+    'NAG' => 'Nagpur',
+    'DEL' => 'New Delhi',
+    'PAT' => 'Patna',
+    'PBD' => 'Porbandar',
+    'IXZ' => 'Port Blair',
+    'PNQ' => 'Pune',
+    'PUT' => 'Puttaprathe',
+    'RPR' => 'Raipur',
+    'RAJ' => 'Rajkot',
+    'IXR' => 'Ranchi',
+    'IXS' => 'Silchar',
+    'SXR' => 'Srinagar',
+    'TEZ' => 'Tezpur',
+    'TEI' => 'Tezu',
+    'TRZ' => 'Tiruchirapally',
+    'TRV' => 'Trivandrum',
+    'UDR' => 'Udaipur',
+    'BDQ' => 'Vadodara',
+    'VNS' => 'Varanasi',
+    'VTZ' => 'Vishakhapatnam',
+    'WGC' => 'Warangal',
+  );
+  $city_options = array_merge($city_options_frequent, $city_options_all);//array_union($city_options_frequent, $city_options_all);
+  return $city_options;
+  //return $city_options_all;
+}
+/**
+* Implementation of airline options
+*/
+function _airlines() {
+  $airlines_options = array(
+    '6E' => t('Indigo'),
+    '9H' => t('Mdlr'),
+    '9W' => t('Jet Airways'),
+    'AI' => t('Air India'),
+    'DN' => t('Kingfisher Red'),
+    'G8' => t('Go Air'),
+    'I7' => t('Paramount'),
+    'IC' => t('Indian / Kingfisher class'),
+    'S2' => t('Jet Lite'),
+    'JL' => t('Jet Lite Codeshare'),
+    'JK' => t('Jet Konnect'),
+    'SG' => t('Spicejet'),
+    'GC' => t('Go Business'),
+    'IX' => t('Air India Express'),
+  );
+  return $airlines_options;
+}
+/**
+* Implementation of showing fare rules to customer
+*/
+function get_farerules($fareRules) {
+  $description = '';
+  foreach ($fareRules->Rule as $rule) {
+    $charge = $rule->Charge == '0.0' ? '' : $rule->Charge;
+    $information = $rule->Description == '' ? '' : $rule->Description .' '. $charge .'<br />';
+    $description .= $information;
+  }
+  return $description;
+}
+/**
+*Function to get the duration of journey in Hours and Minutes format
+*/
+function get_time_duration($seconds) {
+  $periods = array(
+     //'ds'      => 86400,
+     'h'   => 3600,
+     'm'   => 60,
+  );
+  $seconds = (float) $seconds;
+  $segments = array();
+  foreach ($periods as $period => $value) {
+    $count = floor($seconds / $value);
+    $segments[$period] = $count;
+    $seconds = $seconds % $value;
+  }
+  $string = array();
+  foreach ($segments as $key => $value) {
+    $segment_name = $key;
+    $segment = $value . $segment_name;
+    $string[] = $segment;
+  }
+  return implode(' ', $string);
+}
+/**
+* Implementation of calling webservice methods
+* Params  $method (String) is the webservice method name to call, $soapheaders (String) are the authentication token, 
+* $params (Xml string) is method parameters
+**/
+function call_service($method, $soapheaders, $params) {
+  //include nu_soap library
+  require_once(drupal_get_path('module', 'flight_reservation') . '/lib/nusoap.php');
+  // define wsdl path
+  $wsdl_path = $wsdl = WSDL_PATH; 
+
+  // create new soap client instance
+  $soap_client = new nusoap_client(WSDL_PATH, true);
+
+  //check for error
+  $error = $soap_client->getError();
+  if ($error) {
+    drupal_set_message($error, 'error');
+  }
+  
+  $soap_client->setHeaders($soapheaders);
+  
+  // call soap server method
+  $result = $soap_client->call($method, $params);
+  
+  $response = $soap_client->responseData;   
+  
+  //SimpleXML seems to have problems with the colon ":" in the <xxx:yyy> response tags, so take them out
+  $xmlString1 = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $response);
+  
+  //remove xml opening tag since it is occured in wrong place
+  $xmlString = str_replace('&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;', '', $xmlString1);
+  
+  //Load xml string into an array 
+  $xml = simplexml_load_string($xmlString);
+  return $xml;
+}
+/**
+* Implementation of collecting search parameters from url
+* $searhkey is urlencoded string
+*/
+function _get_search_parameters($searchkey) {
+  $search_params = urldecode($searchkey);
+  $searchkey = explode('|', $search_params);
+  $submitted = array();
+  $submitted['trip_type'] = $searchkey['0'];
+  $submitted['leaving_from'] = $searchkey['1'];
+  $submitted['going_to'] = $searchkey['2'];
+  $submitted['departure_time'] = $searchkey['3'];
+  $submitted['return_time'] = $searchkey['4'];
+  $submitted['adults'] = $searchkey['5'];
+  $submitted['children'] = $searchkey['6'];
+  $submitted['infants'] = $searchkey['7'];
+  $submitted['cabin_class'] = $searchkey['8'];
+  return $submitted;
+}
+/**
+* For Testing purpose
+*/
+function test_page() {
+  require_once(drupal_get_path('module', 'flight_reservation') . '/lib/nusoap.php');
+  //$wsdl_path = $wsdl = "http://www.travelpartnernetwork.net/Affiliate/services/CFlightAffiliateWebServices?WSDL";
+  $wsdl_path = $wsdl = 'http://202.54.232.144/Affiliate/services/CFlightAffiliateWebServices?WSDL';
+
+  // create new soap client instance
+  $soap_client = new nusoap_client($wsdl_path, true);
+
+  // check for error
+  $error = $soap_client->getError();
+  if ($error) {
+    print 'Error'. $error;
+  }
+  $soap_client->setHeaders("<AuthenticationToken xmlns='http://user.mynamesspace.com'>
+  <SessionId xmlns='http://user.mynamesspace.com'>AFF059501102080613351297169015971</SessionId>
+  </AuthenticationToken>");
+  $params = array('param0' => "<?xml version='1.0' encoding='UTF-8'?>
+  <MMTFlightRecheckRQ xmlns='http://recheck.elements.flight.webservices.mmt.com'>
+  <Onward><FlightReferenceId>Flt20</FlightReferenceId></Onward></MMTFlightRecheckRQ>");
+  // call soap server method
+  $result = $soap_client->call('recheckFlightRequest', $params);
+  $response = $soap_client->responseData;  
+  drupal_set_message('<pre>Testing API'. print_r($response, TRUE));
+  return 'Hi<pre>'. $result . $response;
+}
+/**
+* Implementation of generating array from response xml
+*/
+function get_flight_details_from_responsexml($newxml, $submitted, $flights_type = 'Onward') {
+    //Values pass to template file
+    $flight_details = array();
+    $flight_details['adults'] = $submitted['adults'];
+    $flight_details['children'] = $submitted['children'];
+    $flight_details['infants'] = $submitted['infants'];
+    $flight_details['leaving_from'] = $city_options[$submitted['leaving_from']];
+    $flight_details['going_to'] = $city_options[$submitted['going_to']];
+    if ($submitted['departure_time']['date'] == '' || empty($submitted['departure_time'])) {
+      $flight_details['departure_date'] = '';
+    } 
+    else {
+      $flight_details['departure_date'] = date('d-M-Y', strtotime($submitted['departure_time']));
+    }
+    if ($submitted['return_time']['date'] == '' || empty($submitted['return_time'])) {
+      $flight_details['return_date'] = '';
+    } 
+    else {
+      $flight_details['return_date'] = date('d-M-Y', strtotime($submitted['return_time']));
+    }
+    $flight_details['responsecode'] = $newxml->ResponseCode;
+    $flight_details['sessionID'] = $sessionID[0]->SessionId;
+    $linked_flight_info_index = 0;
+    //drupal_set_message('<pre>'.print_r($newxml,TRUE));
+    if ($newxml->ResponseCode == '200-success') {
+      foreach ($newxml->Return->flight as $flight) {
+	foreach ($flight->FlightSegments as $info) { //start
+	  //drupal_set_message('Type:'.count($info->FlightSegment).'<pre>'.print_r($info,TRUE));	  
+          if (count($info->FlightSegment)>1) {
+	    for ($index=0; $index<count($info->FlightSegment); $index++) {
+	      $flight_details['linked_flight'][$linked_flight_info_index]['airline_name'][]=$info->FlightSegment[$index]->AirlineName;
+              $flight_details['linked_flight'][$linked_flight_info_index]['carrier_code'][] = $info->FlightSegment[$index]->carrierCode;
+              $flight_details['linked_flight'][$linked_flight_info_index]['flight_number'][] = $info->FlightSegment[$index]->flightNumber;
+              $origin_code = $info->FlightSegment[$index]->origin;
+              $destination_code = $info->FlightSegment[$index]->destination;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['origin'][] = $city_options["$origin_code"];
+              $flight_details['linked_flight'][$linked_flight_info_index]['destination'][] =  $city_options["$destination_code"];
+              $faretype = '';
+	      if ($info->FlightSegment[$index]->Fares->IsRefundable == 'true') {
+	        $faretype = 'Refundable'; 
+	      } 
+              else {
+	        $faretype = 'No Refunds';
+	      }
+	      $flight_details['linked_flight'][$linked_flight_info_index]['fare_rules'][] = get_farerules($info->FlightSegment[$index]->FareRules);
+              $flight_details['linked_flight'][$linked_flight_info_index]['faretype'][] = $faretype;
+              $depart_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->departure);
+              $arrival_time = str_replace(array('T', 'Z'), array('', ''), $info->FlightSegment[$index]->arrival);
+              $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);
+              $flight_details['linked_flight'][$linked_flight_info_index]['timeslot'][] = get_time_duration($journey_time);
+	      $flight_details['linked_flight'][$linked_flight_info_index]['depart_time_only'][] = date('H:i', strtotime($depart_time));
+              $flight_details['linked_flight'][$linked_flight_info_index]['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>', strtotime($depart_time));
+              $flight_details['linked_flight'][$linked_flight_info_index]['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>", strtotime($arrival_time));
+	      $via_stops = '';
+	      if ($info->FlightSegment[$index]->ViaStops == 0) {
+		$via_stops = 'Non Stop';
+	      } 
+              else {
+		$via_stops = $info->FlightSegment[$index]->ViaStops. ' Stop(s)';
+	      }
+	      $flight_details['linked_flight'][$linked_flight_info_index]['via_stops'][] = $via_stops;
+	      $price = ($info->FlightSegment[$index]->Fares->FareAmount + $info->FlightSegment[$index]->Taxes)-$info->FlightSegment[$index]->Fares->DiscountAmount;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['price'][] = $price;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['basefare'][] = $info->FlightSegment[$index]->Fares->FareAmount;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['taxes'][] = $info->FlightSegment[$index]->Taxes;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['discount'][] = $info->FlightSegment[$index]->Fares->DiscountAmount;
+	      $flight_details['linked_flight']['price'][] = $price;
+	      $flight_details['linked_flight'][$linked_flight_info_index]['Isrefundable'][] = $info->FlightSegment[$index]->Fares->IsRefundable; 
+	      //drupal_set_message('<pre>'.print_r($info->FlightSegment[$index],true));
+	    }
+	    $linked_flight_info_index++;
+            //drupal_set_message('<hr>');     
+	  } 
+          else {
+     	    $flight_details['airline_name'][] = $info->FlightSegment->AirlineName;
+	    $flight_details['carrier_code'][] = $info->FlightSegment->carrierCode;
+	    $flight_details['flight_number'][] = $info->FlightSegment->flightNumber;
+            $origin_code = $info->FlightSegment->origin;
+            $destination_code = $info->FlightSegment->destination;
+	    $flight_details['origin'][] = $city_options["$origin_code"];
+	    $flight_details['destination'][] =  $city_options["$destination_code"];
+	    $faretype = '';
+	    if ($info->FlightSegment->Fares->IsRefundable == 'true') {
+	      $faretype = 'Refundable'; 
+	    } 
+            else {
+	      $faretype = 'No Refunds';
+	    }
+	    
+	    $flight_details['fare_rules'][] = get_farerules($info->FlightSegment->FareRules);
+	    
+	    $flight_details['faretype'][] = $faretype;
+	    
+	    $depart_time = str_replace(array('T','Z'),array('',''),$info->FlightSegment->departure);
+            $flight_details['depart_time_only'][] = date('H:i',strtotime($depart_time));
+	    
+	    $flight_details['depart_time'][] = date('D j M'."<b\\r/>".'<b> H:i </b>',strtotime($depart_time));
+	    
+	    $arrival_time = str_replace(array('T','Z'),array('',''),$info->FlightSegment->arrival);
+            
+            $journey_time = (int)strtotime($arrival_time) - (int)strtotime($depart_time);  
+	    $flight_details['timeslot'][] = get_time_duration($journey_time); 
+	    $flight_details['arrival_time'][] = date("D j M"."<b\\r/>"."<b> H:i </b>",strtotime($arrival_time));
+	    $via_stops = '';
+	    if ($info->FlightSegment->ViaStops == 0) {
+	      $via_stops = 'Non Stop';
+	    } 
+            else {
+	      $via_stops = $info->FlightSegment->ViaStops . ' Stop(s)';
+	    }
+	    $flight_details['via_stops'][] = $via_stops;     
+	    
+	    $price = ($info->FlightSegment->Fares->FareAmount + $info->FlightSegment->Taxes)-$info->FlightSegment->Fares->DiscountAmount;
+	    $flight_details['price'][] = $price;
+            $flight_details['basefare'][] = $info->FlightSegment->Fares->FareAmount;
+            $flight_details['taxes'][] = $info->FlightSegment->Taxes;
+            $flight_details['discount'][] = $info->FlightSegment->Fares->DiscountAmount;
+            $flight_details['Isrefundable'][] = $info->FlightSegment->Fares->IsRefundable; 
+	  }//if count($flight->FlightSegment)>0 else part here
+	}//inner foreach end here
+	$flight_details['flight_reference_id'][] = $flight->FlightReferenceId;
+      }//main foreach end here
+   }//if response success end here
+    return $flight_details;
+ }

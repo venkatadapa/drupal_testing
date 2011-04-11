@@ -1,0 +1,811 @@
+/* $Id: forms.css,v 1.3 2009/08/12 08:37:42 johnalbin Exp $ */
+
+/**
+ * @file
+ * Form Styling
+ */
+
+
+.form-item,
+.form-checkboxes,
+.form-radios /* Wrapper for a form element (or group of form elements) and its label */ {
+  margin: 1em 0;
+}
+
+.form-item input.error,
+.form-item textarea.error,
+.form-item select.error /* Highlight the form elements that caused a form submission error */ {
+  border: 2px solid #c00;
+}
+
+.form-item label /* The label for a form element */ {
+  display: block;
+  font-weight: bold;
+}
+
+.form-item label.option /* The label for a radio button or checkbox */ {
+  display: inline;
+  font-weight: normal;
+}
+
+.form-required /* The part of the label that indicates a required field */ {
+  color: #c00;
+}
+
+.form-item .description /* The descriptive help text (separate from the label) */ {
+  font-size: 0.85em;
+}
+
+.form-checkboxes .form-item,
+.form-radios .form-item /* Pack groups of checkboxes and radio buttons closer together */ {
+  margin: 0.4em 0;
+}
+
+.form-submit /* The submit button */ {
+  cursor: pointer;
+}
+
+.container-inline div,
+.container-inline label /* Inline labels and form divs */ {
+  display: inline;
+}
+
+.tips /* Tips for Drupal's input formats */ {
+}
+
+
+/*
+ * Search (search-theme-form.tpl.php)
+ */
+#search-box /* Wrapper for the search form */ {
+}
+
+#edit-search-theme-form-1-wrapper label /* Label that says "Search this site:" */ {
+  display: none;
+}
+
+
+/*
+ * Search (search-block-form.tpl.php)
+ */
+#search-block-form /* Wrapper for the search form */ {
+}
+
+#edit-search-block-form-1-wrapper label /* Label that says "Search this site:" */ {
+  display: none;
+}
+
+
+/*
+ * Drupal's default login form block
+ */
+#user-login-form {
+  text-align: left; /* LTR */
+}
+
+
+/*
+ * OpenID
+ *
+ * The default styling for the OpenID login link seems to assume Garland's
+ * styling of list items.
+ */
+
+#user-login-form ul /* OpenID creates a new ul above the login form's links. */ {
+  margin-bottom: 0; /* Position OpenID's ul next to the rest of the links. */
+}
+
+#user-login-form li.openid-link /* The "Log in using OpenID" link. */ {
+  margin-top: 1em;
+  margin-left: -20px; /* LTR */ /* Un-do some of the padding on the ul list. */
+}
+
+#user-login-form li.user-link /* The "Cancel OpenID login" link. */ {
+  margin-top: 1em;
+}
+
+#user-login ul {
+  margin: 1em 0;
+}
+
+#user-login li.openid-link,
+#user-login li.user-link /* The OpenID links on the /user form. */ {
+  margin-left: -2em; /* LTR */ /* Un-do all of the padding on the ul list. */
+}
+
+
+/*
+ * Drupal admin tables
+ *
+ * We overrode these styles in html-elements.css, but restore them for the admin
+ * section of the site.
+ */
+
+form tbody {
+  border-top: 1px solid #ccc;
+}
+
+form th,
+form thead th {
+  text-align: left; /* LTR */
+  padding-right: 1em; /* LTR */
+  border-bottom: 3px solid #ccc;
+}
+
+form tbody th {
+  border-bottom: 1px solid #ccc;
+}
+
+/* CSS for html form tags */
+input[type="password"],
+input[type="text"] {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+}
+input[type="radio"] {
+  margin-top: 0;
+  vertical-align: middle;
+}
+input[type="checkbox"] {
+  margin-top: 0;
+  vertical-align: middle;
+}
+select {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  cursor: pointer;
+  font-size: 11px;
+}
+button {
+  background-color: #ff0000;
+  border: 1px outset #ff0000;
+  color: #ffffff;
+  cursor: pointer;
+}
+img.ui-datepicker-trigger {
+  cursor: pointer;
+}
+
+/* CSS for Bus Reservation Search Form */
+form.bus-reservation-search-form {
+  background-color: #1a769f;
+  color: #ffffff;
+  padding: 10px;
+  width: 400px;
+}
+form.bus-reservation-search-form .form-submit {
+  background: transparent url(../images/green-button-search.png) top left no-repeat;
+  border: 0 none;
+  color: #ffffff;
+  font-weight: bold;
+  height: 27px;
+  padding-bottom: 3px;
+  padding-right: 30px;
+  width: 169px;
+}
+form.bus-reservation-search-results-form {
+  width: auto;
+}
+form#bus-reservation-search-form .label-colon,
+form#bus-reservation-search-form .form-item .description {
+  display: none;
+}
+#edit-from-wrapper {
+  float: left;
+  width: 200px;
+}
+#edit-to-cities-wrapper {
+  float: left;
+  width: 200px;
+}
+form#bus-reservation-search-form .form-select {
+  font-size: 11px;
+  width: 175px;
+}
+#wrapper-1 {
+  clear: both;
+  height: 0;
+}
+form#bus-reservation-search-form .container-inline-date {
+  float: left;
+  width: 200px;
+}
+form#bus-reservation-search-form .container-inline-date input {
+  font-size: 11px;
+}
+#edit-passengers-wrapper {
+  float: left;
+  width: 200px;
+}
+#edit-seat-type-wrapper {
+  clear: both;
+}
+form#bus-reservation-search-form fieldset {
+  border: 0 none;
+  padding: 0;
+}
+form#bus-reservation-search-form fieldset.expandable legend {
+  padding: 0;
+}
+form#bus-reservation-search-form fieldset.expandable .more-options {
+  background: transparent url(/misc/menu-collapsed.png) 0px 50% no-repeat;
+  color: #0099ff;
+  cursor: pointer;
+  padding-left: 10px;
+  text-decoration: underline;
+}
+form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper {
+  display: none;
+}
+form#bus-reservation-search-form fieldset.expanded .more-options {
+  background: transparent url(/misc/menu-expanded.png) 0px 50% no-repeat;
+}
+form#bus-reservation-search-form #edit-bus-type-wrapper {
+  margin-bottom: 0;
+}
+#bus-reservation-search-results .book_button {
+  background-color: #ff0000;
+  border: 1px outset #ff0000;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 2px 10px;
+  text-decoration: none;
+}
+
+/* CSS for Flights Reservation Search form */
+
+form#flights-form-page {
+  background-color: #1a769f;
+  color: #ffffff;
+  padding: 10px;
+  width: 400px;
+}
+form#flights-form-page .label-colon {
+  display: none;
+}
+form#flights-form-page .form-select {
+  font-size: 11px;
+}
+form#flights-form-page #edit-trip-type-O-wrapper {
+  float: left;
+  width: 100px;
+}
+form#flights-form-page #edit-trip-type-R-wrapper {
+  float: left;
+  width: 100px;
+}
+form#flights-form-page #edit-leaving-from-wrapper {
+  float: left;
+  width: 200px;
+}
+form#flights-form-page #edit-going-to-wrapper {
+  float: left;
+  width: 200px;
+}
+form#flights-form-page .container-inline-date {
+  clear: none;
+  float: left;
+  width: 200px;
+}
+form#flights-form-page .container-inline-date input {
+  font-size: 11px;
+}
+form#flights-form-page .container-inline-date .description {
+  display: none;
+}
+form#flights-form-page #edit-return-time-wrapper {
+  float: left;
+  width: 200px;
+}
+form#flights-form-page .cabinclass-text,
+form#flights-form-page .travellers-text {
+  clear: both;
+  color: #e0df73;
+  font-weight: bold;
+  padding-top: 10px;
+}
+form#flights-form-page #edit-adults-wrapper {
+  float: left;
+  margin-top: 5px;
+  width: 130px;
+}
+form#flights-form-page #edit-children-wrapper {
+  float: left;
+  margin-top: 5px;
+  width: 130px;
+}
+form#flights-form-page #edit-infants-wrapper {
+  float: left;
+  margin-top: 5px;
+  width: 130px;
+}
+form#flights-form-page .form-radios {
+  margin: 0;
+}
+form#flights-form-page #edit-cabin-class-B-wrapper,
+form#flights-form-page #edit-cabin-class-E-wrapper {
+  float: left;
+}
+form#flights-form-page #edit-going-to-wrapper .form-select,
+form#flights-form-page #edit-leaving-from-wrapper .form-select {
+  width: 175px;
+}
+form#flights-form-page .form-submit {
+  background: transparent url(../images/green-button-search.png) top left no-repeat;
+  border: 0 none;
+  color: #ffffff;
+  font-weight: bold;
+  height: 27px;
+  padding-bottom: 3px;
+  padding-right: 30px;
+  width: 169px;
+}
+
+/* CSS for Bus Reservation Booking Form */
+/* Group Booking Details */
+.group-passenger-info,
+.group-booking-details {
+  border: 0 none;
+  padding: 0;
+}
+.group-passenger-info legend,
+.group-booking-details legend {
+  display: none;
+}
+.group-booking-details label {
+  float: left;
+  margin-right: 10px;
+  width: 100px;
+}
+.group-booking-details .form-item .description {
+  display: none;
+}
+.group-booking-details .form-item {
+  margin: 0;
+}
+#passenger-info-title,
+#contact-info-title,
+#edit-field-journey-name-0-value-wrapper {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  padding: 5px;
+}
+#edit-field-journey-name-0-value-wrapper label {
+  display: none;
+}
+#content-area .group-booking-details input {
+  border: 0 none;
+  width: 240px;
+}
+#content-area .group-booking-details .container-inline-date .form-text {
+  width: 100px;
+}
+#edit-field-journey-name-0-value {
+  background-color: transparent;
+  font-size: 14px;
+  font-weight: bold;
+  width: 500px;
+}
+.group-booking-details #edit-field-bus-type-value-wrapper {
+  display: none;
+}
+.group-booking-details .ui-datepicker-trigger {
+  display: none;
+}
+#passenger-info-maintitle,
+#review-booking-details {
+  background-color: #0099ff;
+  border: 1px solid #cccccc;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+}
+#review-booking-details {
+  margin-bottom: 5px;
+}
+#passenger-info-maintitle {
+  margin-bottom: 10px;
+}
+.group-passenger-info .resizable-textarea .grippie {
+  margin-left: 60px;
+}
+#booking-details-area {
+  border: 1px solid #cccccc;
+  padding: 5px;
+}
+#booking-params {
+  margin-bottom: 5px;
+  padding: 5px;
+}
+#booking-params .param1 {
+  margin-right: 10px;
+}
+#booking-details-left {
+  width: 50%;
+}
+#edit-field-seat-fare-0-value-wrapper label {
+  display: none;
+}
+#content-area .group-booking-details #edit-field-seat-fare-0-value {
+  background-color: transparent;
+  bottom: 138px;
+  font-size: 14px;
+  font-weight: bold;
+  left: 600px;
+  position: relative;
+  width: 135px;
+}
+#booking-details-right {
+  width: 50%;
+}
+
+
+/* Passenger Info */
+#passenger-info {
+  border: 1px solid #cccccc;
+  padding: 5px;
+}
+#passenger-info-title,
+#contact-info-title {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  color: #ffffff;
+  clear: both;
+  float: none;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+}
+.group-passenger-info label {
+  float: left;
+  margin-right: 10px;
+}
+#content-area .group-passenger-info input {
+  width: 200px;
+}
+#content-area .group-passenger-info textarea {
+  width: 80%;
+}
+#edit-field-contact-title-value-wrapper .form-select {
+  width: 70px;
+}
+#edit-field-passenger-title-value-wrapper .form-select {
+  width: 50px;
+}
+#content-area .group-passenger-info .form-item {
+  float: left;
+  margin-right: 10px;
+}
+#edit-field-contact-last-name-0-value-wrapper,
+#edit-field-contact-first-name-0-value-wrapper {
+  margin-right: 10px;
+  width: 280px;
+}
+#content-area .group-passenger-info .ui-datepicker-trigger {
+  display: inline;
+}
+#edit-field-contact-email-0-value-wrapper,
+#edit-field-contact-mobile-number-0-value-wrapper {
+  width: 45%;
+}
+#edit-field-contact-address-0-value-wrapper,
+#content-area .group-passenger-info .container-inline-date {
+  clear: none;
+  width: 50%;
+}
+#content-area .group-passenger-info .container-inline-date .form-text {
+  display: inline;
+  width: 100px;
+}
+#edit-field-passenger-last-name-0-value-wrapper,
+#edit-field-passenger-first-name-0-value-wrapper {
+  width: auto;
+}
+#content-area #edit-field-passenger-seat-type-value-wrapper input,
+#content-area #edit-field-passenger-seat-no-0-value-wrapper input,
+#content-area #edit-field-passenger-last-name-0-value-wrapper input,
+#content-area #edit-field-passenger-first-name-0-value-wrapper input {
+  width: 150px;
+}
+#content-area #edit-field-passenger-seat-type-value-wrapper label,
+#content-area #edit-field-passenger-title-value-wrapper label {
+  float: none;
+}
+#content-area .group-passenger-info .container-inline-date label {
+  width: 50px;
+}
+#content-area .group-passenger-info .container-inline-date .description {
+  display: none;
+}
+#content-area .group-passenger-info .label-colon {
+  display: none;
+}
+#content-area #edit-field-contact-email-0-value-wrapper label {
+  width: 86px;
+}
+
+/* Review Payment Summary CSS */
+#payment-summary {
+  border: 1px solid #cccccc;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+#payment-summary-title {
+  background-color: #0099ff;
+  border: 1px solid #cccccc;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+}
+#payment-summary-item {
+  border-bottom: 1px solid #cccccc;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+#payment-summary-total .total-label,
+#payment-summary-item .item-label {
+  background-color: #f1f1f1;
+  float: left;
+  padding: 5px;
+  text-align: right;
+  width: 82%; 
+}
+#payment-summary-total .total-value,
+#payment-summary-item .item-value {
+  background-color: #ffffff;
+  float: left;
+  padding: 5px;
+  text-align: right;
+  width: 15%;
+}
+#payment-summary-total {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Payment Type CSS */
+#bus-booking-note {
+  border: 1px solid #cccccc;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+#payment-type {
+  border: 1px solid #cccccc;
+  padding: 5px;
+}
+#payment-type label {
+  display: none;
+}
+#payment-type .form-radios label {
+  display: inline;
+}
+#payment-type-title {
+  background-color: #0099ff;
+  border: 1px solid #cccccc;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.page-bus-reservation-booking .node-form #edit-preview {
+  display: none;
+}
+.page-bus-reservation-booking .node-form .form-submit {
+  background-color: #ff0000;
+  border: 1px outset #ff0000;
+  color: #ffffff;
+  float: right;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+
+/* Fligh Reservation Module CSS */
+
+#modify-search-title {
+  background-color: #709de1;
+  padding: 5px 5px 5px 10px;
+  text-decoration: underline;
+}
+.block-collapse {
+  background: transparent url(/misc/menu-collapsed.png) 0px 50% no-repeat;
+  cursor: pointer;
+  float: right;
+  height: 7px;
+  margin-top: 3px;
+  /* padding: 5px 1px 4px 2px; */
+  width: 7px;
+}
+.block-expanded {
+  background: transparent url(/misc/menu-expanded.png) 0px 50% no-repeat;
+  cursor: pointer;
+  float: right;
+  height: 7px;
+  margin-top: 3px;
+  /* padding: 5px 1px 4px 2px; */
+  width: 7px;
+}
+#flights-filter-form-page {
+  background-color: #E2F4FF;
+  display: none;
+  margin-bottom: 2px;
+  padding: 0px 0px 10px 0px;
+}
+form#flights-filter-form-page .label-colon {
+  display: none;
+}
+form#flights-filter-form-page .form-select {
+  font-size: 11px;
+}
+form#flights-filter-form-page #edit-trip-type-O-wrapper {
+  float: left;
+  width: auto;
+}
+#flights-filter-form-page #edit-trip-type-O-wrapper input {
+  margin: 0;
+}
+form#flights-filter-form-page #edit-trip-type-R-wrapper {
+  float: left;
+  width: auto;
+}
+#flights-filter-form-page #edit-trip-type-R-wrapper input {
+  margin-right: 0;
+}
+form#flights-filter-form-page .cabinclass-text,
+form#flights-filter-form-page .travellers-text {
+  clear: both;
+  color: #e0df73;
+  font-weight: bold;
+  padding-left: 5px;
+  padding-top: 10px;
+}
+#flights-filter-form-page .form-radios {
+  margin: 0;
+}
+form#flights-filter-form-page #edit-cabin-class-B-wrapper,
+form#flights-filter-form-page #edit-cabin-class-E-wrapper {
+  float: left;
+}
+form#flights-filter-form-page #edit-going-to-wrapper .form-select,
+form#flights-filter-form-page #edit-leaving-from-wrapper .form-select {
+  width: 150px;
+}
+form#flights-filter-form-page .form-submit {
+  background: transparent url(../images/green-button-search.png) top left no-repeat;
+  border: 0 none;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  height: 27px;
+  padding-bottom: 3px;
+  padding-right: 30px;
+  width: 169px;
+}
+form#flights-filter-form-page .form-radios,
+form#flights-filter-form-page #edit-infants-wrapper,
+form#flights-filter-form-page #edit-children-wrapper,
+form#flights-filter-form-page #edit-adults-wrapper,
+form#flights-filter-form-page .container-inline-date,
+form#flights-filter-form-page #edit-going-to-wrapper,
+form#flights-filter-form-page #edit-leaving-from-wrapper {
+  padding-left: 5px;
+}
+form#flights-filter-form-page .container-inline-date input {
+  width: 150px;
+}
+
+/*  Filter Flight Search Results CSS */
+
+#filter-results {
+  background-color: #009afe;
+  color: #ffffff;
+  font-weight: bold;
+  margin: 2px 0px;
+  padding: 5px 5px 5px 10px;
+  text-decoration: none;
+}
+#price-range-block {
+  background-color: #e2f4ff;
+  margin-bottom: 2px;
+}
+#price_range {
+  background-color: #abd8f7;
+  color: #231260;
+  font-weight: bold;
+  padding: 5px 5px 5px 10px;
+}
+#price_amount {
+  background-color: #e2f4ff;
+  color: #231260;
+  font-weight: bold;
+  padding: 5px;
+}
+#price_slider {
+  background-color: #e2f4ff;
+  margin-left: 10px;
+  width: 145px;
+}
+.slide-arrows-text {
+  background-color: #e2f4ff;
+  color: #211360;
+  display: block;
+  padding: 5px;
+}
+#time-range-block {
+  background-color: #e2f4ff;
+  margin-bottom: 2px;
+}
+#time_range {
+  background-color: #abd8f7;
+  color: #231260;
+  font-weight: bold;
+  padding: 5px 5px 5px 10px;
+}
+#time_amount {
+  background-color: #e2f4ff;
+  color: #231260;
+  font-weight: bold;
+  padding: 5px;
+}
+#time_slider {
+  background-color: #e2f4ff;
+  margin-left: 10px;
+  width: 145px;
+}
+
+/* Flight Search Extra Filters CSS */
+
+#flight-search-extra-filters-form #stops-options {
+  background-color: #abd8f7;
+  color: #231260;
+  font-weight: bold;
+  padding: 5px 5px 5px 10px;
+}
+#flight-search-extra-filters-form #stops-options-radios {
+  background-color: #e2f4ff;
+  float: left;
+  margin-bottom: 2px;
+  width: 170px;
+}
+#flight-search-extra-filters-form #stops-options-radios .form-radios {
+  margin: 0;
+}
+#flight-search-extra-filters-form #edit-direct-flights-0-wrapper {
+  float: left;
+}
+#flight-search-extra-filters-form #edit-direct-flights-1-wrapper {
+  float: left;
+}
+#flight-search-extra-filters-form #airlines-title {
+  background-color: #abd8f7;
+  color: #231260;
+  font-weight: bold;
+  margin-top: 2px;
+  padding: 5px 5px 5px 10px;
+}
+#flight-search-extra-filters-form .airlines_checkboxes {
+  background-color: #e2f4ff;
+  float: left;
+  margin: 0;
+  width: 170px;
+}
+#flight-search-extra-filters-form #refundable-heading {
+  background-color: #abd8f7;
+  color: #231260;
+  font-weight: bold;
+  margin-top: 2px;
+  padding: 5px 5px 5px 10px;  
+}
+#flight-search-extra-filters-form #edit-refundable-only-wrapper {
+  background-color: #e2f4ff;
+  margin: 0;
+  padding-top: 5px;
+}
+
+

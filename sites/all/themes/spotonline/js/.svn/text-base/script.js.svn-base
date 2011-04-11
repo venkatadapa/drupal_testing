@@ -1,0 +1,15 @@
+// $Id$ script.js
+
+$('document').ready(function() {
+  $("form#bus-reservation-search-form fieldset.expandable .more-options").click(function() {
+    if ($("form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper").is(":hidden")) {
+      $("form#bus-reservation-search-form fieldset.expandable").addClass('expanded');
+    } 
+    if ($("form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper").is(":visible")) {
+      $("form#bus-reservation-search-form fieldset.expandable").removeClass('expanded');
+    }
+    $("form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper").slideToggle('slow');
+  });
+
+  $(".group-booking-details input").attr('readonly', 'readonly');
+});

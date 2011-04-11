@@ -1,0 +1,93 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installs neccessary tables for Bus reservation
+ *
+ */
+
+  /**
+   *Implementation of hook_schema()
+   *
+   */
+function bus_reservation_schema() {
+  $schema = array();
+  
+  /** 
+   * 1. Cities
+   *     city_id - id of city
+   *     city_name
+   *     is_active
+   */
+  $schema['bus_cities'] = array(
+    'fields' => array(
+      'city_id' => array(
+  'description' => 'The city id City',
+  'type' => 'int',
+  'unsigned' => TRUE,
+  'not null' => TRUE
+  ),
+    'city_name' => array(
+  'description' => 'Name of cities',
+      'type' => 'varchar',
+      'length' => 500,
+      'default' => ''
+      ),
+    'is_active' => array(
+      'description' => 'Is active',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE
+      ),
+    ),
+    'primary key' => array('city_id'),
+    );
+
+  /** 
+   * 1. Cities
+   *     city_id - id of city
+   *     city_name
+   *     is_active
+   */
+  $schema['bus_source_destination_pairs'] = array(
+    'fields' => array(
+      'source_city_id' => array(
+  'description' => 'The city id of City',
+  'type' => 'int',
+  'unsigned' => TRUE,
+  'not null' => TRUE
+  ),
+    'destination_ids' => array(
+  'description' => 'ID of Destination cities',
+      'type' => 'varchar',
+      'length' => 7000,
+      'default' => ''
+      ),
+    'is_active' => array(
+      'description' => 'Is active',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE
+      ),
+    ),
+    'primary key' => array('source_city_id'),
+    );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install()
+ */
+function bus_reservation_install() {
+  drupal_install_schema('bus_reservation');
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function bus_reservation_uninstall() {
+  drupal_uninstall_schema('bus_reservation');
+}
+

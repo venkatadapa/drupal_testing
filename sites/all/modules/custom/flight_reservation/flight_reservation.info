@@ -1,0 +1,8 @@
+;$Id$
+name = Custom Flights Reservation Module
+description = Custom Flights Reservation Module
+package = Other
+core = 6.x
+dependencies[] = cck
+dependencies[] = date
+ 

@@ -1,0 +1,47 @@
+<?php
+//$Id$
+$session_id = $details['sessionID'];
+if($details['responsecode']=='200-success') {
+  $onward_flight_reference_id = $details['onward_flight_reference_id'];
+  $onward_seat_available = $details['onward_seat_available'];
+  $onward_fare = $details['onward_FareAmount'];
+  $onward_taxes = $details['onward_taxes'];
+  $onward_fare_changed = $details['onward_FareChanged'];
+  $onward_discount = $details['onward_Discount'];
+  $onward_seat_available = $details['onward_seat_available'];
+  $return_flight_reference_id = $details['return_flight_reference_id'];
+  $return_seat_available = $details['return_seat_available'];
+  $return_fare = $details['return_FareAmount'];
+  $return_taxes = $details['return_taxes'];
+  $return_fare_changed = $details['return_FareChanged'];
+  $return_discount = $details['return_Discount'];
+  $return_seat_available = $details['return_seat_available'];  
+}
+echo "<h2>Onward Flight information</h2>"; 
+echo 'Ref ID:'. $onward_flight_reference_id .'<br />';
+echo 'Seat Available:'. $onward_seat_available .'<br />';
+echo 'Fare:'. $onward_fare .'<br />';
+echo 'Taxes:'. $onward_taxes .'<br />';
+echo 'fare_changed:'. $onward_fare_changed .'<br />';
+echo 'Discount:'. $onward_discount .'<br />'; 
+$return_flight_info = ''; 
+if(!empty($return_flight_reference_id)) {
+echo '<hr />';
+echo "<h2>Return Flight information</h2>";
+echo 'Ref ID:'. $return_flight_reference_id .'<br />';
+echo 'Seat Available:'. $return_seat_available .'<br />';
+echo 'Fare:'. $return_fare .'<br />';
+echo 'Taxes:'. $return_taxes .'<br />';
+echo 'fare_changed:'. $return_fare_changed .'<br />';
+echo 'Discount:'. $return_discount .'<br />';
+$return_flight_info = '&ReturnFid='.$return_flight_reference_id; 
+}
+?>
+<br />
+<input type='checkbox' name='terms_conditions' id="terms_conditions" />
+I understand and agree with the rules and restrictions of this fare, the <a href="/node/1" target="_blank">Privacy Policy</a> and the <a href="/node/2" target="_blank">Terms & Conditions</a> (User Agreement) of Spot Online  <br />
+<b>Continue without Registering</b>
+<br />
+In a hurry? Proceed to pay without registering<br />
+<b><a href="/flights/continuePayment?sessID=<?php print $session_id;?>&OnwardFid=<?php print $onward_flight_reference_id.$return_flight_info;?>&searchkey=<?php print $_GET['searchkey'];?>" id="continue_to_payment">Continue without registering</a></b>
+

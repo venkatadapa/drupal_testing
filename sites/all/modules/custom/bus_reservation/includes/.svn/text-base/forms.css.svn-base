@@ -1,0 +1,274 @@
+/** Home page Form Style **/
+/** Home page Form Style **/
+#filter_results,
+#filter_results_return{
+	text-align:left;
+	}
+select#noOfPassenger {
+  width:100px;
+}			
+div.action {
+	text-align: right;
+	}
+div.action button{
+	color:#fff;
+	padding:4px 0 10px 3px;
+	background:url(../images/btn_lt.gif) left top no-repeat;
+	border:none;
+	margin:0 0 5px 5px;
+	font-size:15px
+	}
+div.action b{
+	padding:5px 5px 10px 0;
+	background:url(../images/btn_rt.gif) right top no-repeat;
+	font-style:normal;
+	}
+#tab1_form,
+#car_form,
+#bus_form,
+#hotel_form,
+#feedback_form,
+#contact_form,
+#tab2_form,
+#tab3_form,
+#tab4_form {
+	padding: 8px;
+	background: #f4f4f4;	
+	border:1px solid #d6d6d6;		
+	}
+#tab2_form,
+#tab3_form,
+#tab4_form{
+display:none;
+}
+#tab1_form table, 
+#car_form table,
+#bus_form table,
+#hotel_form table,
+#feedback_form table,
+#contact_form table,
+#tab2_form table, 
+#tab3_form table,
+#tab4_form table {
+	border-collapse:collapse;
+	width:260px;
+	font-size:9px;
+	}	
+#tab1_form td, 
+#car_form td, 
+#bus_form td,
+#hotel_form td,
+#feedback_form td,
+#contact_form td,
+#tab2_form td, 
+#tab3_form td,
+#tab4_form td {
+	width: 50%;
+	padding: 0 8px 10px 8px;
+	vertical-align: top;
+	}
+
+#tab1_form p, 
+#car_form p, 
+#bus_form p,
+#hotel_form p,
+#feedback_form p,
+#contact_form p,
+#tab2_form p, 
+#tab3_form p, 
+#tab4_form p, 
+#filter_results p{
+	padding:0px;
+	margin:5px 0;
+	}
+#tab1_form.noborder,
+#car_form.noborder,
+#bus_form.noborder,
+#hotel_form.noborder{
+	padding:0;
+	border:none;
+         }
+	
+	
+#filter_results a{
+	text-decoration:none;
+	}
+	
+label,select{
+	font-size: 11px;
+	vertical-align: middle;
+	color:#333;	
+	font-family: Arial;
+	margin-left:0px; 
+	}
+#pickpoint{
+	margin:1px;
+	width:180px;
+	
+	}
+	
+#pickpointTo{
+	margin:1px;
+	width:180px;
+	}
+input.text{
+	font-size: 12px;
+	vertical-align: middle;
+	color:#333;	
+	font-family: Arial;
+	width:90%;	
+	
+	}
+#frame1, #frame2  {
+width:100px;
+height:200px;
+display:none;
+position:absolute;
+z-index:-1;
+filter:alpha(opacity=0);
+opacity:0;
+moz-opacity:0;
+
+}
+
+label {
+	font-weight:bold;
+	margin:0 0 2px 0;
+	border: none;
+	}	
+input.check {	
+	margin-right:4px;
+	vertical-align: middle;
+	}
+input.radio {
+	margin-right: 2px;
+	vertical-align: middle;	
+	}	
+input.button {
+	margin: 0 3px 5px 10px;	
+	}		
+td.trip label {
+	font-size: 13px;
+	float: left;
+	margin-right: 15px;
+	width: auto;
+	}
+label.trip {
+	font-size: 13px;
+	float: left;
+	margin-right: 15px;
+	width: auto;
+	}	
+label.bookingtype {
+	font-weight: normal;
+	float: left;
+	width:auto;
+	margin-right:5px
+	}
+td.time input.text {
+	width: 77%;
+	}	
+			
+td.time select.text {
+	width: 70%;
+	}
+td.newtime input.text {
+	width: 57%;
+	}	
+			
+td.newtime select.text {
+	width: 50%;
+	}	
+td.general input.text {
+	width: 50%;
+	}	
+
+td.small {
+	width: 20%;
+	}
+#ticketmoreinfo, #hotelmoreinfo, #packagemoreinfo{
+	display:none;
+	}
+
+#ticketmoreinfo_btn{
+	margin:0 0 10px 6px;
+	width:100px;
+	}
+
+div.showmore a {
+	font-size:11px;
+	padding:5px 0 5px 15px;
+	background:url(../images/more.gif) center left no-repeat;
+	cursor:pointer;
+	}
+
+div.showless a {
+	font-size:11px;
+	padding:5px 0 5px 15px;
+	background:url(../images/less.gif) center left no-repeat;
+	cursor:pointer;
+	}
+
+input.error,
+textarea.error {
+	background:#FFCCCC;
+	/*width:100%;*/
+
+	}
+input.proper{
+	background:#fff;
+	border:1px solid #aaa;
+	}
+.name_err {
+width:25%;
+	margin-right:5px;
+	display:inline
+	}
+
+.statusMsg {
+	color:#339900;
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:11px;
+	border:1px solid #66CC00;	
+	background:#ccff99 url(../images/accept.gif) 5px 5px no-repeat;
+	margin-bottom:10px;
+	display:none;	
+	}	
+
+.statusErr {
+	color:#CC0000;	
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:11px;
+	border:1px solid #FF0000;
+	background:#FFCCCC url(../images/exclamation.gif) 5px 5px no-repeat;
+	margin-bottom:10px;
+	display:none;
+	text-align:left;
+	}
+.promomsg {
+	color:#CC0000;	
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:11px;
+	border:1px solid #FF0000;
+	background:#FFCCCC url(../images/exclamation.gif) 5px 5px no-repeat;
+	margin-bottom:10px;
+	}
+.seatErr{
+	color:#CC0000;	
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:13px;
+	border:1px solid #FF0000;
+	background:#FFCCCC url(../images/exclamation.gif) 5px 5px no-repeat;
+	margin-bottom:10px;
+
+         }
+#contact_info td {
+	vertical-align: top;
+	}	
+@charset "UTF-8";
+/* CSS Document */
+

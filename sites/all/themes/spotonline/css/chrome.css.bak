@@ -1,0 +1,26 @@
+/* CSS specific for Chrome Browser. */
+
+form#bus-reservation-search-form #edit-dep-time-wrapper {
+  margin-top: 0;
+  padding-top: 10px;
+}
+#main #flights-filter-form-page input[type="radio"] {
+  margin-top: -3px;
+  vertical-align: middle;
+}
+#main input[type="radio"] {
+  margin-top: -3px;
+  vertical-align: middle;
+}
+#header .top-right-links {
+  padding: 3px 0px 0px 3px;
+}
+#header .myaccount-link {
+  margin-right: 5px;
+}
+#main form#flights-filter-form-page .form-submit,
+#main form#flights-form-page .form-submit,
+#main form.bus-reservation-search-form .form-submit {
+  font-size: 12px;
+}
+

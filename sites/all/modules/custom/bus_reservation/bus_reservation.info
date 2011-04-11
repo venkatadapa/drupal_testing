@@ -1,0 +1,4 @@
+; $Id: 
+name = Bus Reservtion
+description = Provides functionality for Online Bus Reservation
+core = 6.x

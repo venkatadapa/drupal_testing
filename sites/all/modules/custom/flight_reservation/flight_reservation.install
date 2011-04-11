@@ -1,0 +1,102 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installs neccessary tables for Flight Reservation
+ *
+*/
+
+/**
+ *Implementation of hook_schema()
+*/
+function flight_reservation_schema() {
+  $schema = array();
+  $schema['flights_cities'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'description' => 'Unique auto generated id',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'city_code' => array(
+        'type' => 'varchar',
+        'length' => 3,
+        'description' => 'The city code',
+        'unsigned' => FALSE,
+        'not null' => FALSE
+      ),
+      'city_name' => array(
+        'type' => 'varchar',
+        'length' => 250,
+        'description' => 'Name of cities',
+        'default' => ''
+      ),
+      'is_active' => array(
+        'description' => 'Is active',
+        'type' => 'int',
+        'unsigned' => FALSE,
+        'not null' => FALSE
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  //Create table to store the selected flights information (id,search_sessionID,flight_reference_id,fare,departure_datetime,arrival_datetime,journey_duration,fare_rules,journey_type,flight_type) 
+  $schema['flights_selected'] = array(
+    'fields' => array(
+      'id' => array(
+        'description' => 'The auto incremented id for each entry',
+         'type' => 'serial',
+         'not null' => TRUE,
+         'unsigned' => TRUE
+      ),
+      'search_sessionID' => array(
+        'description' => 'The unique session ID genereated by API',
+        'type' => 'varchar',
+        'length' => 128, 
+        'not null' => FALSE, 
+        'default' => '',
+      ),
+      'onward_flight_info' => array(
+        'description' => 'The onward flight information',
+         'type' => 'text',
+         'not null' => FALSE, 
+         'default' => '',
+      ),
+      'return_flight_info' => array(
+        'description' => 'The onward flight information',
+        'type' => 'text',
+        'not null' => FALSE, 
+        'default' => '',
+      ),
+      'searchkey' => array(
+        'description' => 'Search key',
+        'type' => 'text',
+        'not null' => FALSE, 
+        'default' => '',
+      ),
+      'datetime' => array(
+        'description' => 'The Unix timestamp when the node was created.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0
+      ),
+    ),
+    'primary key' => array('id'),
+  );       
+  return $schema;
+}
+/**
+ * Implementation of hook_install()
+*/
+function flight_reservation_install() {
+  drupal_install_schema('flight_reservation');
+}
+/**
+ * Implementation of hook_uninstall()
+*/
+function flight_reservation_uninstall() {
+  drupal_uninstall_schema('flight_reservation');
+}
+

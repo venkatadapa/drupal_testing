@@ -1,0 +1,466 @@
+/* Spotonline specific CSS */
+
+.cleardiv {
+  clear: both;
+  float: none;
+}
+.highlighted-value {
+  font-weight: bold;
+}
+
+
+/* Bus Reservation Results Page CSS */
+table#bus-reservation-search-results-tbl tr th {
+  background-color: #ccc;
+  padding: 5px;
+}
+table#bus-reservation-search-results-tbl tr td {
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+  width: 65px;
+}
+table#bus-reservation-search-results-tbl select {
+  font-size: 11px;
+  width: 150px;
+} 
+table#bus-reservation-search-results-tbl td#pickup {
+  width: 155px;
+}
+#bus-reservation-search-results .location-params {
+  background-color: #eeeeee;
+  font-size: 20px;
+  height: 40px;
+  padding: 5px;
+}
+#bus-reservation-search-results .location-params span {
+  display: block;
+  font-weight: bold;
+  margin-top: 12px;
+}
+#bus-reservation-search-results	.other-params {
+  background-color: #cccccc;
+  font-size: 11px;
+  height: 25px;
+}
+#bus-reservation-search-results .other-params .param-item {
+  border-right: 1px solid #ffffff;
+  display: block;
+  float: left;
+  padding: 5px;
+  width: auto;
+}
+#bus-reservation-search-results .search-results-title {
+  clear: both;
+  font-size: 15px;
+  height: 25px;
+  margin-top: 5px;
+  padding-top: 10px;
+}
+#bus-reservation-search-results .search-results-params {
+  background-color: #eeeeee;
+  font-size: 11px;
+  height: 20px;
+  padding: 5px;
+}
+#bus-reservation-search-results select {
+  width: 200px;
+}
+#bus-reservation-search-results .search-results-params .prevday-param {
+  background: transparent url(/misc/menu-collapsed-rtl.png) left 50% no-repeat;
+  float: right;
+  margin-right: 25px;
+  margin-top: 2px;
+  padding-left: 10px;
+}
+#bus-reservation-search-results .search-results-params .nextday-param {
+  background: transparent url(/misc/menu-collapsed.png) right 50% no-repeat;
+  float: right;
+  margin-top: 2px;
+  padding-right: 10px;
+}
+
+/* CSS for Flight Reservation Results page */
+
+.trip_loc_details {
+  background: #1F5A84;
+  color: #fff;
+  float: left;
+  height: 55px;
+  margin-left: 50px;
+  padding-left: 15px;
+  padding-top: 20px;
+  width: 200px;
+}
+.trip_date_details {
+  background: #1F5A84;
+  color: #fff;
+  float: left;
+  height: 55px;
+  margin-left: 20px;
+  padding-left: 15px;
+  padding-top: 20px;
+  width: 200px;
+}
+#flight-search-result-params {
+  border: 1px solid #7dbce7;
+  height: 30px;
+  margin: 0;
+  width: 569px;
+}
+#flight-search-result-params .param-item {
+  border-right: 1px solid #7dbce7;
+  display: block;
+  float: left;
+  font-weight: bold;
+  padding: 7px 10px;
+  text-align: center;
+}
+#flight-search-result-params #prevday-param {
+  background-color: #eaf7ff;
+  width: 100px;
+}
+#flight-search-result-params #prevday-param a {
+  background: url(/misc/menu-collapsed-rtl.png) left 50% no-repeat;
+  padding-left: 15px;
+}
+#flight-search-result-params #mid-area {
+  background-color: #f1f1f1;
+  color: #221461;
+  width: 305px;
+}
+#flight-search-result-params #nextday-param {
+  background-color: #eaf7ff;
+  border-right: 0 none;
+  width: 100px;
+}
+#flight-search-result-params #nextday-param a {
+  background: url(/misc/menu-collapsed.png) right 50% no-repeat;
+  padding-right: 15px;
+}
+
+table#flightslist {
+  margin: 0;
+  width: 100%;
+}
+#flightslist tr.flight-search-hdr {
+  border: 1px solid #7dbce7;
+  border-bottom: 0 none;
+}
+table#flightslist tr th {
+  background-color: transparent;
+  color: #0099ff;
+  padding: 5px;
+}
+table#flightslist tr td {
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+#flightslist tr.flight-search-row {
+  border: 1px solid #7dbce7;  
+}
+.fare-rules {
+  background: yellow;
+  display: none;
+  padding: 10px;
+  position: absolute;
+  z-index: 3;
+}
+table#flightslist tr td.price {
+  background-color: #f1f1f1;
+  color: #231360;
+  font-weight: bold;
+  vertical-align: middle;
+}
+.price-text {
+  display: block;
+}
+#flightslist tr.linked-flight-starting-row {
+  border: 1px solid #7dbce7;
+  border-bottom: 0 none;
+}
+#flightslist tr.linked-flight-starting-row td {
+  padding: 0;
+}
+#flightslist tr.linked-flight-ending-row {
+  border: 1px solid #7dbce7;
+  border-top: 0 none;
+}
+#flightslist tr.linked-flight-ending-row td {
+  padding: 0;
+}
+#flightslist tr.linked-flight-mid-row,
+#flightslist tr.linked-flight-row {
+  border-left: 1px solid #7dbce7;
+  border-right: 1px solid #7dbce7;
+}
+#flightslist td.linked-flight-mid-cell {
+  background: transparent url(/sites/all/modules/custom/flight_reservation/images/linked_flight_bg.gif) scroll no-repeat;
+  background-position: center center;
+  text-align: center;
+}
+
+
+#flights-list {
+  float: left;
+  margin-left: 1px;
+  margin-top: 10px;
+  width: 100%;
+}
+#pre-flights-search-info {
+  background-color: #cccccc;
+  display: none;
+  padding: 20px;
+  text-align: center;
+}
+#loaderinfo {
+  margin-bottom: 40px;
+}
+#tripinfo {
+  margin-bottom: 20px;
+}
+#flights-list #ad-block {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  height: 100px;
+  margin: 40px 0px 40px 50px;
+  width: 450px;
+}
+
+
+/* CSS for Bus Reservation Booking Form */
+
+.group-booking-details label {
+  float: left;
+}
+
+/* Print Ticket CSS */
+
+#print-ticket {
+  width: 595px;
+}
+#print-ticket .title {
+  font-weight: bold;
+  padding: 10px;
+  vertical-align: top;
+  width: 50%;
+}
+#print-ticket .bkg-powered-by {
+  float: right;
+  font-weight: bold;
+  padding: 10px; 
+  vertical-align: top;
+  width: 50%;
+}
+#print-ticket .title span,
+#print-ticket .bkg-powered-by span {
+  display: block;
+}
+#print-ticket .title span {
+  font-size: 14px;
+  line-height: normal;
+}
+.operator {
+  border: 1px solid #000;
+  font-size: 26px;
+  font-weight: bold;
+  padding: 10px;
+  width: 50%;
+}
+td.params1 {
+  border: 1px solid #000;
+  font-size: 12px;
+  padding: 10px;
+  width: 50%;
+}
+td.pnr-params {
+  border: 1px solid #000;
+  border-bottom: 0 none;
+  border-right: 0 none;
+  font-size: 14px;
+  padding: 10px;
+  width: 50%;
+}
+td.params2 {
+  border: 1px solid #000;
+  border-bottom: 0 none;
+  border-left: 0 none;
+  font-size: 12px;
+  padding: 10px;
+  width: 50%;
+}
+td.pickup-addr {
+  border: 1px solid #000;
+  border-top: 0 none;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 5px;
+}
+td.passenger-summary {
+  border: 1px solid #000;
+  width: 100%;
+}
+#passenger-summary {
+  margin: 0;
+  width: 595px;
+}
+#passenger-summary tr th {
+  border-bottom: 1px solid #000;
+  padding: 5px;
+}
+#passenger-summary tr td {
+  border-bottom: 1px solid #000;
+  padding: 5px;
+}
+td.operator-info {
+  border-bottom: 2px dashed #000;
+  border-top: 2px dashed #000;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+td.terms-conditions {
+  font-size: 9px;
+  font-weight: bold;
+  padding: 10px 10px 0px 10px;
+}
+td.terms-left {
+  font-size: 9px;
+  padding: 10px;
+  width: auto;
+}
+td.terms-right ul,
+td.terms-left ul {
+  margin-top: 0;
+  padding-left: 20px;
+  list-style-type: square;
+}
+td.terms-right ul li,
+td.terms-left ul li {
+  list-style-type: square;
+}
+td.terms-right {
+  float: left;
+  font-size: 9px;
+  padding: 10px;
+  width: auto;
+}
+#passenger-summary .tax-label {
+  text-align: right;
+}
+#passenger-summary .tax-label,
+#passenger-summary .tax-value {
+  font-size: 12px;
+  line-height: normal;
+  padding: 5px;
+}
+#passenger-summary .total-label {
+  line-height: normal;
+  text-align: right;
+}
+#passenger-summary .total-value,
+#passenger-summary .total-label {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px;
+}
+#print-ticket .site-contact-info {
+  border-bottom: 1px solid #000000;
+  border-top: 1px solid #000000;
+  display: block;
+  margin-left: 20px;
+}
+
+/* CSS Popups */
+
+a.popups-processed:after {
+  content: "";
+}
+
+
+/* Review Flight Travel Search Details Page CSS */
+
+.review-item {
+  border: 1px solid #7CBCE7;
+}
+.review-item-tbl {
+  margin: 0;
+}
+.review-item-tbl .review-num {
+  background-color: #7CBCE7;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 5px;
+  text-align: right;
+  width: 20px;
+}
+.review-item-tbl .review-hdg {
+  background-color: #EBF7FE;
+  color: #231360;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px;
+}
+#rules-restrictions {
+  margin: 0px;
+}
+#rules-restrictions .terms-checkbox {
+  padding-left: 6px;
+}
+#without-register {
+  border: 1px solid #7CBCE7;
+  margin: 0px;
+  width: 50%;
+}
+#without-register .wr-title {
+  background-color: #EBF7FE;
+  border-bottom: 1px solid #7CBCE7;
+}
+#without-register .wr-title span {
+  background-color: #7CBCE7;
+  color: #ffffff;
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px;
+  width: 75%;
+}
+#without-register .wr-content {
+  background-color: #EBF7FE;
+  color: #231360;
+  height: 200px;
+  padding: 10px;
+  vertical-align: top;
+}
+#without-register #wr-link {
+  margin-top: 100px;
+}
+#review-fare-details {
+  color: #231360;
+  padding: 5px;
+}
+#review-fare-details #total-fare-value,
+#review-fare-details #total-fare {
+  border-bottom: 1px dashed #231360;
+  border-top: 1px dashed #231360;
+  color: #231360;
+  padding: 5px;
+}
+#review-fare-details #grand-total-fare-value,
+#review-fare-details #grand-total-fare {
+  color: #0099FF;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 5px;
+}
+#review-travel-details tr th {
+  border-bottom: 1px dashed #231360;
+  color: #231360;
+  font-weight: bold;
+}
+#review-travel-details tr td {
+  border-bottom: 1px dashed #231360;
+}

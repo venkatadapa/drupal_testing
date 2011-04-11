@@ -1,0 +1,11 @@
+/* CSS for IE8 browser */
+
+#main #flights-filter-form-page input[type="radio"] {
+  margin-top: -3px;
+  vertical-align: middle;
+}
+#main input[type="radio"] {
+  margin-top: -3px;
+  vertical-align: middle;
+}
+

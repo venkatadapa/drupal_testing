@@ -1,0 +1,34 @@
+9
+
+dir
+5
+svn+ssh://svn.azri.biz/svn/repos/spotonline/trunk/sites/all/modules/contrib/jquery_ui/jquery.ui/demos
+svn+ssh://svn.azri.biz/svn/repos/spotonline
+
+
+
+2011-01-24T08:12:39.448690Z
+4
+asif
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+3ef74dd8-d857-4c8f-88e8-12c9b05f9718
+
+functional
+dir
+
+real-world
+dir
+

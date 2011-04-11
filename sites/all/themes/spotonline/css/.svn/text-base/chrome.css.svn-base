@@ -1,0 +1,6 @@
+/* CSS specific for Chrome Browser. */
+
+form#bus-reservation-search-form #edit-dep-time-wrapper {
+  margin-top: 0;
+  padding-top: 10px;
+}

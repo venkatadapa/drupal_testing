@@ -1,0 +1,108 @@
+<?php
+//$Id$
+global $base_url, $theme;
+$theme_path = $base_url . '/' . drupal_get_path('theme', $theme);
+drupal_add_js(drupal_get_path('module', 'flight_reservation') .'/js/flight_search.js');
+drupal_add_js('sites/all/libraries/tablesorter/js/jquery.tablesorter.min.js');
+drupal_add_css('sites/all/libraries/tablesorter/assets/css/default.css');
+$path = 'sites/all/libraries/tablesorter/js/jquery.tablesorter.min.js';
+drupal_add_js(drupal_get_path('module', 'flight_reservation').'/js/tablesorter_initialize.js');
+//drupal_set_message('<pre>'.print_r($flight_details,TRUE));
+if($flight_details['responsecode'] == '200-success') {
+?>
+<?php  //print 'Min time value:'.$flight_details['time_min_filter'].'<br />';
+  // print 'Max time value:'.$flight_details['time_max_filter'];
+$direct_flights_count = count($flight_details['airline_name']);
+$linked_flights_count = count($flight_details['linked_flight']);
+?>
+<table id="flightslist" cellspacing="0" cellpadding="0" border="0">
+<thead>
+<tr class="flight-search-hdr">
+  <th><b>Airline<br />& Flt Number</b></th><th><b>Faretype</b></th><th><b>Departure</b></th>
+  <th><b>Arival</b></th><th><b>Stops</b></th><th><b>Duration</b></th><th><b>Price</b></th>
+</tr>
+</thead>
+<tbody> 
+
+
+
+
+<!--Linked Flights Information Start here-->
+<?php for($linked_flight_index=0; $linked_flight_index < $linked_flights_count; $linked_flight_index++) { 
+  //Filters for price range, time range and refundable start
+  if( ($flight_details['price_min_filter'] == '' && $flight_details['price_max_filter'] == '') || 
+      ($flight_details['linked_flight'][$linked_flight_index]['price']['0'] > $flight_details['price_min_filter'] && $flight_details['linked_flight'][$linked_flight_index]['price']['0'] < 
+      $flight_details['price_max_filter'])) { 
+  
+    if( ($flight_details['time_min_filter'] == '' && $flight_details['time_max_filter'] == '') || 
+      (str_replace(':','',$flight_details['linked_flight'][$linked_flight_index]['depart_time_only']['0']) > str_replace(':','',$flight_details['time_min_filter']) && 
+      str_replace(':','',$flight_details['linked_flight'][$linked_flight_index]['depart_time_only']['0']) < str_replace(':','',$flight_details['time_max_filter']))) { 
+
+      if( $flight_details['refundable'] == 0 || ($flight_details['refundable']=='1' && $flight_details['linked_flight'][$linked_flight_index]['Isrefundable']['0']=='true') ) {  
+?>
+  <tr class="linked-flight-starting-row">
+    <td colspan="7"></td>
+  </tr>
+  <?php for($info_index=0; $info_index < count($flight_details['linked_flight'][$linked_flight_index]['airline_name']); $info_index++) { 
+  ?>
+   <tr class="linked-flight-row">
+    <td id="airline-name-<?php print $info_index; ?>" class="airline-name">
+      <img src="/misc/forum-new.png" alt="dummy-image" /><br />
+      <?php print $flight_details['linked_flight'][$linked_flight_index]['airline_name'][$info_index]; ?><br />
+      <?php print $flight_details['linked_flight'][$linked_flight_index]['carrier_code'][$info_index]. '-'. 
+      $flight_details['linked_flight'][$linked_flight_index]['flight_number'][$info_index]; ?></td>
+  <td id="faretype-<?php print $info_index; ?>" class="faretype"><?php print $flight_details['linked_flight'][$linked_flight_index]['faretype'][$info_index]; ?> <br />
+   <a href="javascript://" onMouseover="showrules('linked_farerules-<?php print $linked_flight_index.$info_index;?>')" onMouseout="hiderules('linked_farerules-<?php print $linked_flight_index.$info_index;?>')">Fare rules</a>
+   <div id="linked_farerules-<?php print $linked_flight_index.$info_index; ?>" class="fare-rules"><?php print $flight_details['linked_flight'][$linked_flight_index]['fare_rules'][$info_index]; ?></div>
+  </td>
+  <td class="origin"><?php print $flight_details['linked_flight'][$linked_flight_index]['origin'][$info_index].'<br />'. 
+  $flight_details['linked_flight'][$linked_flight_index]['depart_time'][$info_index]; ?></td>
+  <td class="destination"><?php print $flight_details['linked_flight'][$linked_flight_index]['destination'][$info_index].'<br />'.
+  $flight_details['linked_flight'][$linked_flight_index]['arrival_time'][$info_index]; ?></td>
+  <td class="via-stops"><?php print $flight_details['linked_flight'][$linked_flight_index]['via_stops'][$info_index]; ?></td>
+  <td class="time-slot">Duration:<?php print $flight_details['linked_flight'][$linked_flight_index]['timeslot'][$info_index]; ?></td>
+  <?php if($info_index==0) { ?>
+  <td class="price" valign="baseline" rowspan="<?php print count($flight_details['linked_flight'][$linked_flight_index]['airline_name'])+
+  count($flight_details['linked_flight'][$linked_flight_index]['airline_name'])-1; ?>">
+  <?php $price = '';
+      for($price_index=0; $price_index < count($flight_details['linked_flight'][$linked_flight_index]['price']); $price_index++) {
+         $price += $flight_details['linked_flight'][$linked_flight_index]['price'][$price_index]; 
+      }
+  ?>
+<span class="price-text">Rs <?php print number_format($price, 2); ?><br />(All Incl Per Adult)</span>
+   <span class="book-link-span">
+
+<?php if(isset($flight_details['selected_round_trip'])) { ?>
+<a class="book-this-departure" href="/flights/showreturn?onward_fid=<?php print $flight_details['flight_reference_id'][$direct_flights_count+$linked_flight_index];?>&sessID=<?php print $flight_details['sessionID'];?>&searchkey=<?php print $_GET['searchkey'];?>"><img src="<?php print $theme_path; ?>/images/show_return.png" alt="" /></a>
+<?php } else { ?>
+<a class="book-this-departure" href="/flights/selected?onward_fid=<?php print $flight_details['flight_reference_id'][$direct_flights_count+$linked_flight_index];?>&sessID=<?php print $flight_details['sessionID'];?>&searchkey=<?php print $_GET['searchkey'];?>"><img src="<?php print $theme_path; ?>/images/book_this_departure.png" alt="" /></a>
+<?php } ?>
+</span>
+  </td>
+ <?php } ?>
+ </tr>  
+    <?php if (($info_index+1) < count($flight_details['linked_flight'][$linked_flight_index]['airline_name'])) {
+      print '<tr class="linked-flight-mid-row">';
+      print '<td height="13" align="center" class="linked-flight-mid-cell" colspan="6">Change planes in '.$flight_details['linked_flight'][$linked_flight_index]['destination'][$info_index].'</td>';
+      print '</tr>';
+    } 
+  }
+?>  
+  <tr class="linked-flight-ending-row">
+    <td colspan="7"></td>
+  </tr>
+  <tr class="flight-search-spacing-row">
+    <td colspan="7">&nbsp;</td>
+  </tr>
+<?php   
+   } //if refundable 
+  }//if times range end here 
+ }  //if price range end here 
+} //for loop end here 
+?>
+<!--Linked Flights Information End here-->
+</tbody>
+</table>
+<?php } else {
+  print '<font color="red"><b>'.$flight_details['responsecode'].'</b></font>';
+} ?>

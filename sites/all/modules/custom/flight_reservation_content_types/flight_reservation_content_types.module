@@ -1,0 +1,3 @@
+<?php
+
+include_once('flight_reservation_content_types.features.inc');

@@ -1,0 +1,2492 @@
+/* Spotonline specific CSS */
+
+.cleardiv {
+  clear: both;
+}
+
+/* Bus Reservation Results Page CSS */
+table#bus-reservation-search-results-tbl tr th {
+  background-color: #ccc;
+  padding: 5px;
+}
+table#bus-reservation-search-results-tbl tr td {
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+  width: 65px;
+}
+table#bus-reservation-search-results-tbl select {
+  font-size: 11px;
+  width: 150px;
+} 
+table#bus-reservation-search-results-tbl td#pickup {
+  width: 155px;
+}
+#bus-reservation-search-results .location-params {
+  background-color: #eeeeee;
+  font-size: 20px;
+  height: 40px;
+  padding: 5px;
+}
+#bus-reservation-search-results .location-params span {
+  display: block;
+  font-weight: bold;
+  margin-top: 12px;
+}
+#bus-reservation-search-results	.other-params {
+  background-color: #cccccc;
+  font-size: 11px;
+  height: 25px;
+}
+#bus-reservation-search-results .other-params .param-item {
+  border-right: 1px solid #ffffff;
+  display: block;
+  float: left;
+  padding: 5px;
+  width: auto;
+}
+#bus-reservation-search-results .search-results-title {
+  clear: both;
+  font-size: 15px;
+  height: 25px;
+  margin-top: 5px;
+  padding-top: 10px;
+}
+#bus-reservation-search-results .search-results-params {
+  background-color: #eeeeee;
+  font-size: 11px;
+  height: 20px;
+  padding: 5px;
+}
+#bus-reservation-search-results .search-results-params .prevday-param {
+  background: transparent url(/misc/menu-collapsed-rtl.png) left 50% no-repeat;
+  float: right;
+  margin-right: 25px;
+  margin-top: 2px;
+  padding-left: 10px;
+}
+#bus-reservation-search-results .search-results-params .nextday-param {
+  background: transparent url(/misc/menu-collapsed.png) right 50% no-repeat;
+  float: right;
+  margin-top: 2px;
+  padding-right: 10px;
+}
+
+/* CSS for Flight Reservation Results page */
+
+.trip_loc_details {
+  background: #1F5A84;
+  color: #fff;
+  float: left;
+  height: 55px;
+  margin-left: 150px;
+  padding-left: 15px;
+  padding-top: 20px;
+  width: 200px;
+}
+.trip_date_details {
+  background: #1F5A84;
+  color: #fff;
+  float: left;
+  height: 55px;
+  margin-left: 20px;
+  padding-left: 15px;
+  padding-top: 20px;
+  width: 200px;
+}
+table#flight-search-result-params {
+  border: 1px solid #7dbce7;
+  height: 30px;
+  margin: 0;
+  width: 100%;
+}
+table#flight-search-result-params .param-item {
+  border-right: 1px solid #7dbce7;
+  display: block;
+  float: left;
+  font-weight: bold;
+  padding: 7px 10px;
+  text-align: center;
+}
+table#flight-search-result-params #prevday-param {
+  background-color: #eaf7ff;
+  width: 150px;
+}
+table#flight-search-result-params #prevday-param a {
+  background: url(/misc/menu-collapsed-rtl.png) left 50% no-repeat;
+  padding-left: 15px;
+}
+table#flight-search-result-params #mid-area {
+  background-color: #f1f1f1;
+  color: #221461;
+  width: 385px;
+}
+table#flight-search-result-params #nextday-param {
+  background-color: #eaf7ff;
+  border-right: 0 none;
+  width: 152px;
+}
+table#flight-search-result-params #nextday-param a {
+  background: url(/misc/menu-collapsed.png) right 50% no-repeat;
+  padding-right: 15px;
+}
+
+table#flightslist {
+  border: 1px solid #7dbce7;
+  margin: 0;
+  width: 100%;
+}
+table#flightslist tr th {
+  background-color: transparent;
+  border-bottom: 1px solid #7dbce7;
+  color: #0099ff;
+  padding: 5px;
+}
+table#flightslist tr td {
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+.fare-rules {
+  background: yellow;
+  display: none;
+  padding: 10px;
+  position: absolute;
+  z-index: 3;
+}
+
+#flights-list {
+  margin-top: 10px;
+}
+#pre-flights-search-info {
+  background-color: #cccccc;
+  display: none;
+  padding: 20px;
+  text-align: center;
+}
+#loaderinfo {
+  margin-bottom: 40px;
+}
+#tripinfo {
+  margin-bottom: 20px;
+}
+#flights-list #ad-block {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  height: 100px;
+  margin: 40px 0px 40px 150px;
+  width: 450px;
+}
+
+
+/* CSS for Bus Reservation Booking Form */
+
+.group-booking-details label {
+  float: left;
+}
+
+div.showmore {
+	padding: 0 0 0 50px;
+	margin: 0 0 5px 0;
+	background: url(../images/more.gif) no-repeat;
+	height: 46px;
+	line-height: 46px;
+	width: 450px;
+	font-size: 2em;
+	font-weight: normal;
+	float: left;
+}
+div.showmore a {
+	color: #fff;
+	text-decoration: none;
+	display: block;
+}
+div.showmore a:hover { color: #ccc; }
+div.active {background-position: left bottom;} /*--When toggle is triggered, it will shift the image to the bottom to show its "opened" state--*/
+
+
+body#home #home_tab a,
+body#ticket #ticket_tab a,
+body#flight #flight_tab a,
+body#bus #bus_tab a,
+body#car #car_tab a,
+body#hotel #hotel_tab a,
+body#package #package_tab a,
+body#destination #destination_tab a{
+	color:#ff6632;
+	border-bottom:4px solid #ff6632;
+}
+	
+body#faq #faq_tab a,
+body#feedback #feedback_tab a,
+body#contact #contact_tab a,
+body#about #about_tab a,
+body#partners #partners_tab a,
+body#terms #terms_tab a,
+body#privacy #privacy_tab a{
+	color:#000;
+}
+
+body#cancel #cancel_tab a,
+body#travel #travel_tab a{
+	color:#000;
+}
+
+
+#container { 
+	width: 770px;
+	background: #fff;
+	margin: 5px auto;
+	text-align: left;
+} 
+#sidebar1 {
+	float: left;
+	padding-left:6px;
+	width: 260px;
+	width: 250px;
+}	
+#leftCol1 {
+	margin-top: 10px;
+	padding-top: 10px;	
+	padding-bottom: 10px;	
+	border: 1px solid #f0f0f0;
+	text-align: center;
+}	
+#leftCol1 a {
+	display: block;
+	margin-top: 10px;
+}
+#mainContent { 	
+	float: left; 
+	margin-left: 20px;
+	width: 490px;
+}
+
+/* header include styles */
+#header img{ 
+	margin:0 0 0 10px;
+	float:left;
+}
+
+#header img.helpline{
+	margin:2px 0 0 0;
+	float:right;
+}	
+
+#header p{ 
+	padding:14px 0 0 0px;
+	font-size:11px;
+	margin:0;
+}
+	
+#topnav {
+ 	display:block;
+	margin:0;
+	text-align:right;
+	padding:0;
+}
+	
+#topnav ul {
+ 	list-style:none;
+}
+	
+#topnav li {
+	list-style-type:none;
+	display:inline;
+	font-size:11px;
+	margin-right:3px;
+	font-weight:bold;
+}
+	
+#topnav a {
+	color:#0065cd;
+	text-decoration:none;
+}
+	
+#topnav a:hover {
+	color:#000;
+}
+	
+#tollfree{
+	display:none;
+	color:#cc0000;
+	margin:0;
+	padding:0 0 0 10px;
+	width:200px;
+	background: url(../images/tollfree_left.jpg) left top no-repeat;
+}
+
+#tollfree p {
+	margin:0;
+	padding:0;
+}
+#mainnav{
+	height: 47px;
+	background: url(../images/nav_bg.jpg) top repeat-x;
+}
+#primary_nav {
+	display: block;
+	height: 47px;
+	background: url(../images/nav_left.jpg) left top no-repeat;
+}
+	
+#primary_nav li a {
+	float: left;
+	font-size:11px;
+	text-transform:uppercase;
+	color:#333333;
+	text-decoration:none;
+	font-weight:bold;	
+	padding-bottom: 2px;
+	margin: 9px 0 0 10px;			
+}
+		
+#primary_nav a:hover,  
+#primary_nav a.pactive{
+	color:#ff6632;
+	border-bottom:4px solid #ff6632;
+}
+
+#secondary_nav{
+	float:right;
+	display: block;
+	height: 47px;
+	padding:5px 60px 0px 0;
+	list-style-type:none;
+	background:url(../images/nav_right.jpg) right top no-repeat;
+}
+
+#secondary_nav ul {
+	list-style-type:none;
+}
+	
+#secondary_nav li a{
+	display:inline;
+	margin:0 0 0 3px;
+	font-size:11px;
+	font-weight:bold;
+	color:#0065cd;
+	text-decoration:none;
+}
+
+#secondary_nav a:hover, 
+#primary_nav a.active{
+	color:#000;
+}
+
+#cancel_nav {
+	display: block;
+	margin-top:10px; 
+	float:right; 
+	font-size:13px
+}
+	
+#cancel_nav li a {
+	text-decoration:underline;
+	font-weight:bold;	
+	margin: 0 0 0 0;
+	padding: 0 5px;
+	border-right:1px solid #000;
+	display: block;
+	float:left;	
+}
+	
+#cancel_nav li a.last {
+	border:none;
+}
+
+div.backlink{
+	margin:10px 0; 
+	font-size:13px
+}
+	
+#header h1 {
+	margin: 0; 
+	padding: 10px 0; 
+}
+
+
+ul.inline,
+ul.inline li {
+	margin:0;
+	padding:0;
+	list-style:none;
+	display:inline;
+}
+	
+div.tabContainer {
+	color: #fff;
+	background:#666 url(../images/tab_bg.jpg) repeat-x;
+}
+	
+div.tabContainer b {
+	display: block;
+	font-size: 16px;
+	padding: 5px 10px;
+	text-align: left;
+	}	
+	
+
+#tabmenu { 
+	display:block;
+	color: #000; 
+	border-bottom: 1px solid #d6d6d6;
+	font-size:11px;
+	font-weight:bold; 
+	z-index: 1; 
+	background:url(../images/tab_bg.jpg) repeat-x;	 
+} 	
+		
+ #tabmenu a {
+ 	border-left:1px solid #999;
+ 	display:block;
+	float:left;
+    color: #fff; 
+    padding: 8px; 
+    margin: 0px; 
+    text-decoration: none;
+    cursor:hand;
+    cursor:pointer; 
+	background:url(../images/tab_bg.jpg) repeat-x;	  
+}  
+	
+ #tabmenu a:hover { 
+ 	text-decoration:underline;
+  	background:#555;
+}
+	
+#tabmenu a.active,
+#tabmenu a.active:hover { 
+   background:url(../images/tab_active.jpg) repeat-x;
+   border-bottom: 1px solid #fff;
+   color:#cb0100;
+   cursor:text;
+   text-decoration:none;
+}   
+
+#alert {
+	margin:0 0 10px 0;
+	padding:5px 0 5px 25px;
+	background: #ffffcd url(../images/alert_bg.jpg) left center no-repeat;
+}
+	
+#alert p{
+	font-size:11px;
+	margin:0;
+}
+	
+#promos{
+	margin:10px 0;
+}
+	
+#promos a {
+	float:left;
+	margin:0 14px 0 0;
+	border:none;
+}
+	
+#promos a.lastad{
+	margin:0;
+}
+
+#ticker{
+	margin:5px 0;
+	padding:7px 5px 8px 34px;
+	background:#f1f1f1 url(../images/ticker_bg.jpg) center left no-repeat;
+	font-size:11px;
+	color:#666666;
+	letter-spacing:0px;
+}
+
+#ticker p{
+	float:right;
+	margin:0;
+}
+
+#ticker a{
+	color:#0164ca;
+	text-decoration:none;
+}
+
+#myticker{
+	padding:0;
+	margin:0;
+}
+	
+.tickerclass{
+}
+	
+ #rightCol1 { 
+	border:1px solid #e7f1f3;
+	border:1px solid #ccc;	
+}
+	
+.flt_left{
+	float:left;
+}
+#mytable{
+	padding:5px;
+	border:none;
+}
+#rightCol1 td {
+	width: 33%;
+	vertical-align:top;	
+	padding-right:5px;
+	font-size:11px;
+	line-height:1.5em;
+	color:#666;
+}
+#rightCol1 td.tt {
+	background-color:#ffffe5;
+}
+#rightCol1 h3 {
+	margin:0;
+	padding:0;
+	color:#cb0100;
+	font-size:11px;
+}
+#rightCol1 a {
+	color:#0065cd;
+	text-decoration:underline;
+}	
+#bottompanel {
+	background-color:#fff;
+	font-size:10px;
+	margin:5px 0;
+	clear: both;
+}
+
+#part_technologynew {
+	float:right;
+	border-left:1px solid #ccc;
+	padding:0;
+	margin:0 20px 0 0;
+}	
+
+#part_business img, 
+#part_technology img{
+	float:left;
+	margin:5px 0 0 0;
+}
+#myfooter #leftCol1 {
+	float:left;
+	width:255px;
+	margin: 10px 0 0 0;
+}
+
+#footer {
+	clear: both;
+	padding: 0; 
+	margin:10px 0 0 0;
+}
+	
+/* Styles for results page*/	
+
+div.section_header{
+	background:#ff6634 url(../images/hd_rt_br.jpg) top right no-repeat;
+	padding:0;
+	margin:5px 0 0 0;
+}
+
+div.section_header h1{
+	background:url(../images/hd_lt_br.jpg) top left no-repeat;
+	padding:8px 12px;
+	color:#fff;
+	font-size:20px;
+	margin:0;
+}
+	
+div.section_header b{
+	background:url(../images/nos_bg.gif) left center no-repeat;
+	padding:4px 9px;
+	font-weight:normal;
+	color:#ff6735;
+	margin:0 8px 0px 0px;
+}
+
+#result_parameter {
+	display:block;
+	background-color:#cc0001;
+	padding:0 0 0 5px;
+	_padding:0;	
+	text-align:right;
+}
+#result_parameter li{
+	display:block;
+	float:left;
+	color:#fecf9b;
+	border-right:1px solid #ff6634;
+	font-size:11px;
+	margin:0 0 0 5px;
+	padding:6px 10px 5px 5px;
+}
+#result_parameter b {
+	color:#fff;
+	padding-left:3px;
+	}
+#result_parameter a.showmore {
+	color:#fff;
+	background:url(../images/mod_more.gif) 5px center no-repeat;
+	border-bottom:1px solid #fff;
+	border-right:1px solid transparent
+}	
+#result_parameter a.showless {
+	color:#000;
+	text-decoration:none;
+	background:#f4f4f4 url(../images/less.gif) 5px center no-repeat;
+	border-bottom:1px solid #f4f4f4;
+	border-right:1px solid #999;	
+}
+#modify_result_btn {
+	float:right;
+	display:block;
+	padding:5px 10px 5px 18px;
+	font-size:11px;	
+	position:relative;
+	bottom:-1px;
+	font-weight:bold;	
+}
+	
+#modify_result {
+	background-color:#f0f0f0;
+	border:1px solid #999999;
+	padding:5px;
+	height:150px;
+}
+
+#modify_result div.left{
+	float:left;
+	margin:10px 0;
+	padding:0 15px;
+	width:15%;
+	height:120px;
+}
+#modify_result div.center{
+	float:left;
+	margin:10px 0;
+	border-right:solid 1px #ccc;
+	padding:0 45px;
+	width:40%;
+	height:120px;
+}
+#modify_result div.right{
+	float:left;
+	margin:10px 0;
+	border-right:solid 1px #ccc;
+	border-left:solid 4px #fff;
+	padding:0 45px;
+	width:30%;
+	height:120px;
+}
+	
+#modify_result div.left{
+	border-left:none;
+	width:20%
+}
+	
+#modify_result div.right{
+	border-right:none;
+}
+	
+#modify_result div table{
+	border-collapse:collapse;
+}
+	
+#modify_result div td{
+	padding:4px;
+}
+
+div.col_filterresult {
+	float: left; 
+	width: 140px;
+	background: #fff; /* the background color will be displayed for the length of the content in the column, but no further */
+	margin:5px 0px;
+	margin-left:0px;
+	text-align:center;
+}
+
+div.col_filterresult h5{
+	text-align:left;
+}
+
+div.col_filterresult img{
+	margin:10px auto;
+}
+	
+div.col_filterresult label{
+	margin:4px 0 2px 0;
+}
+
+div.col_results {
+	float:left;
+	width:610px;
+	margin:0 0 0 2px;
+}
+	
+div.col_results div.pickupfilter {
+	font:bold 11px Arial, Helvetica, sans-serif;
+	border:none;
+	margin:0px 0px;
+	margin-left:5px;
+	height:5px;
+}
+div.col_results table{
+	padding:0;
+	margin:0 0 10px 0;
+	width:126%;
+	border-collapse:collapse;
+	text-align:left;
+	font-size:11px;
+}
+
+.noResult {
+	color:#CC0001;	
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:13px; 
+	border:1px solid #A9A9A9;
+	background:#ffff9a url(../images/alert.gif) 5px 5px no-repeat;
+	display:block;
+	margin-top:-5px;
+	margin-bottom:10px;
+	margin-left:2%;
+	width:88%;
+}
+	
+.noResult99 {
+	color:#CC0000;	
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:11px;
+	border:1px solid #FF0000;
+	background:#FFCCCC url(../images/exclamation.gif) 5px 5px no-repeat;
+	margin-bottom:10px;
+	text-align:left;
+}
+div.col_results h2{
+	padding:5px 0;
+	margin:0 5px 0 0;
+	font-size:15px;
+}
+div.col_results a {
+	cursor:pointer;
+}
+
+div.col_filterresult a{
+	cursor:pointer;
+}
+
+
+div.col_results span {
+	color:#333;
+	font-weight:normal;
+	font-style:normal;
+	margin:0 5px;
+}	
+div.col_results tr{
+	margin:2px 0;
+}
+div.col_results th{
+	padding:10px 0px 10px 0px;
+	margin:0;
+	background:#ebf0f4;
+	color:#000;
+	font-weight:bold;
+	vertical-align:top;
+}
+div.col_results td {
+	padding:10px 0px 0px 0px;
+	border-bottom:1px #cccccc dotted;
+}
+div.col_results td input.radio {
+	margin: 0;
+}
+div.col_results td.radio,
+div.col_results th.radio {
+	padding:10px 0;
+}		
+
+.hideme{
+}
+	
+.selected{
+	background:#99cdfd;
+}
+	
+.deselected{
+	background:#fff;
+}
+	
+.highlighted{
+	background:#feff99;
+}
+		
+.cancelled{
+	color:#c5c6c4;
+}
+div.col_results a sortbottom {
+	color: #000;
+}	
+div.col_results span.sortarrow img {
+	width: 5px;
+	height: 7px;	
+	margin: 0 -4px 0 -2px;
+	padding: 0;
+	vertical-align: middle;
+}	
+div.col_results div.pickup{
+	border:1px #d1d1d1 solid;
+	background:#fff;
+	position:relative;
+	cursor:pointer;
+	width: 120px;
+	padding-right: 3px;
+}
+div.col_results div.pickup a {
+	color:#0166d0;
+	text-decoration:none;
+	display:block;
+	background:url(../images/pickup.gif) no-repeat right center;
+	cursor:pointer; 
+	padding:2px 9px 2px 2px;
+}
+div.col_results div.pickup a:hover {
+	text-decoration:underline;
+}	
+div.col_results th img{
+	margin:0 0 0 1px;
+}
+div.col_results td.departs{
+	font-weight:bold;
+}
+div.col_results td.price{
+	color:#000;
+	font-weight:bold;
+	font-size:12px;
+	text-align: left;
+}
+div.col_results td.discount{
+	color:#000;
+	font-weight:bold;
+	font-size:12px;
+	text-align: center;
+}
+	
+.req {
+	padding:4px;
+	vertical-align:middle;
+	background:#ebf5ff;
+	border-right:1px solid #99cdfd;
+	border-bottom:1px solid #99cdfd;
+	border-left:1px solid #99cdfd;
+}	
+	
+div.col_results th b{
+	cursor: pointer;
+	cursor: hand;	
+	color:#0166d0;
+	text-decoration:underline;
+	padding: 0;
+}
+div#seatselector h4 {
+	background:url(../images/request.gif) left center no-repeat;
+	padding:1px 0 5px 25px;
+	margin:5px 15px 0 15px;
+	font-size:16px;
+}
+div#seatselector h5 {
+	padding:0 0 0 35px;
+	margin:3px 5px;
+	font-size:12px;
+	font-weight:normal;
+}
+.fareAndProceed {
+	float:right;
+	text-align: right;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 15px;
+	font-weight: bold;
+	display: block;
+}
+#results_depart th{
+	padding-left: 4px;
+	padding-right: 1px;
+	color: #4466FF;
+}
+
+div.resultstotal{
+}
+	
+div.resultstotal em {
+	display:none;
+	margin:0px 5px;
+	font-size:12px;
+	font-weight:normal;
+	background:url(../images/loader.gif) left center no-repeat;
+	padding:5px 0 5px 25px;
+}
+
+div.resultstotal h3{
+	margin:5px 0;
+	padding:10px 0;
+	border-top:3px solid #333;
+	border-bottom:3px solid #333;
+	font-weight:normal;
+	text-align:right;
+}
+div.total span,	
+div.resultstotal span{
+	padding-right:10px;
+}	
+button.button {
+	color: #fff;
+	padding:2px 5px;
+	font-family: Arial;	
+	font-size:16px;
+	width: auto;
+	overflow: visible;	
+	margin: 0px 1px;
+	vertical-align: middle;	
+}	
+button.button strong { 
+	padding:0;	
+	margin:0;
+}		
+button.red {
+	background:url(../images/btn_rt.gif) left center no-repeat;
+}
+button.grey {
+	background:url(../images/cancel_btn_rt.gif) left center no-repeat;
+}
+button.button3 {
+	color: #fff;
+	padding:1px 2px;
+	font-family: Arial;	
+	font-size:13px;
+	width: auto;
+	overflow: visible;	
+	margin-top: -8px;
+}	
+
+button.grey strong,	
+button.red strong {
+	background:none;
+}		
+button.disabled {
+	border-top:1px solid #999;
+	border-right:1px solid #ccc;
+	border-left:1px solid #999;
+	border-bottom:1px solid #ccc;
+	background: #ccc;
+	color: #999;
+}	
+.change_pickup{
+	z-index:800;
+	background:#fff;
+	width:200px;
+	position:absolute;
+	display:none;
+	border:1px solid #a9a9a9;
+}	
+#change_map{
+	padding:4px;
+	margin:2px;
+	background:#FF0000;
+	}
+#change_map a {
+	color:#fff;	
+	text-decoration:underline;	
+}	
+#change_map a.map {
+	background:url(../images/showmap.gif) center right no-repeat;
+	padding-right:12px;
+}
+#listpickup {
+	list-style:none;
+	display:block;
+	margin:0;
+	padding:0;
+	overflow:auto;
+	height:105px;
+	background:#FFFFFF;
+	overflow-x:hidden;
+}
+
+#listpickup li a {
+	font-weight:bold;
+	display:block;
+	color:#000;
+	margin:0;
+	padding:5px;
+	text-decoration:none;
+	border-bottom:1px solid #ccc;
+	background:#fff;
+}
+	
+#listpickup li a:hover {
+	background:#99cdff;
+}
+	
+#listpickup li a b {
+	line-height:13px;
+	font-size:13px;
+	float:right;
+}
+	
+#listpickup li a i {
+	margin-top:2px;
+	display:block;
+	font-style:normal;
+	font-weight:normal;	
+	color:#666;
+	font-size:10px;
+}	
+	
+#listpickup span{
+	font-weight:normal;
+	text-align:right;
+}
+
+/** Review Page CSS **/	
+#my_timer {
+	width: 770px;
+	background:#feff99;
+	border:1px solid #cdcb9a;
+	z-index: 200;
+	overflow:hidden;
+}
+* html .Expand_div iframe,		
+* html #washout iframe, 	
+* html #my_timer iframe,
+* html #closerDiv iframe,	
+* html #PNRcloserDiv iframe,
+* html #PNRcloserDivTA iframe,
+* html #HotSeatDiv iframe,
+* html #travelAgentDiv iframe,
+* html #preloaderDiv iframe,
+* html 	#filterloaderDiv iframe {	
+	display:none;
+	display/**/:block;
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:-1;
+	filter:mask();
+	width:3000px;
+	height:3000px;
+}
+#washout table td iframe, 
+#closerDiv table td iframe {
+	display:block;
+	position:relative;
+	width:100%;
+	height:100%;
+	z-index:5500;
+	filter:none;
+}	
+#my_timer div{
+	padding-left:25px;
+	padding:10px;	
+}
+#my_timer p{
+	padding-left:25px;
+}
+#my_timer h3 {
+	background:url(../images/timer_alert.gif) left top no-repeat;	
+	padding-left: 20px;
+}	
+#my_timer span.contact {
+	float:right;
+	margin-right:0px;
+	padding: 5px;
+}	
+#my_timer h3, #my_timer h5{
+	font-weight:normal;
+}
+#my_timer h5 {
+	color:#323234;
+}	
+#my_timer h6 {
+	font-size:12px;
+	color:#323234;
+	text-align:right;
+}
+#my_timer a{
+	color:#0066cb;
+	font-weight:bold;
+}
+#review_parameter {
+	display:block;
+	background-color:#fff;
+	margin:0;
+	text-align:right;
+}
+#review_parameter li{
+	display:block;
+	float:left;
+	list-style:none;
+	color:#666;
+	font-size:12px;
+	margin:0 0 0 1px;
+	padding:10px 0;
+}
+#review_parameter b{
+	margin:0 5px;
+	color:#000;
+}	
+	
+div.booking_details {
+	border: 1px solid #ccc;
+	background:#fff;
+	margin:0 0 10px 0;
+}
+div.booking_details div.pass_details {
+	margin: 0 3% 10px 3%;
+}		
+div.booking_details h1 {
+	margin:5px 0 0 0;
+	padding:5px 0 5px 10px;
+	font-weight:normal;
+	color:#666;
+	font-size:18px;
+}
+
+div.booking_details h1 span{
+	float:right;
+	margin:10px 0px 0 0;
+}	
+
+div.booking_details h2 {
+	margin: 1px 0 0 0;
+	padding:10px 15px;
+	font-weight:normal;
+	color:#666;
+	font-size:13px;
+	background: #f5f5f5;
+}
+
+div.booking_details h3{
+	border-bottom: 1px solid #ccc;	
+	margin:0;
+	padding:7px 20px;
+	background:#f0f0f0;
+}
+
+div.booking_details h4{
+	margin:0 0 5px 0;
+	padding:2px 10px;
+	font-weight:normal;
+	color:#666;
+	font-size:14px;
+}
+
+div.booking_details h4.contactinfo{
+	background:#fff;
+}
+	
+div.booking_details em{
+	margin:0 10px 0px 0;
+	font-style:normal;
+}
+
+div.booking_details span{
+	float:right;
+	margin-right:30px;
+}
+
+div.booking_details div{
+	font-size:11px;
+}
+div.booking_details div.left,
+div.booking_details div.right{
+	float:left;
+	margin: 10px 2% 10px 2%;
+	width: auto;
+}
+div.booking_details div.left {
+	width: 40%;
+}	
+div.booking_details div.right {
+	width: 50%;
+	_width: 45%;	
+}
+div.booking_details td{
+	color:#666;
+	font-size:13px;
+	font-weight:normal;
+	margin:0;
+	padding:2px;
+}
+	
+div.booking_details b{
+	color:#000;
+}
+	
+div.booking_details a.seatno{
+	font-weigth:bold;
+	color:#000;
+	background-color:#9acb00;
+	cursor:text;
+	text-decoration:none;
+	margin-right:5px;
+	padding:2px 4px;
+	line-height: 20px;
+}
+	
+div.booking_details i{
+	font-style:normal;
+	color:#333;
+}
+	
+div.booking_details strong{
+	color:#cb3301;
+}
+	
+div.booking_details p{
+	color:#cb3301;
+}
+	
+div.booking_details  sup{
+	color:#cb3301;
+}
+
+.ticket_details{
+	margin:10px;
+}
+
+div.pass_details{
+	background:#fff;
+}
+
+div.pass_details h3 {
+	margin:0 0 5px 0;	
+	padding:7px 10px;
+	background:#f0f0f0;
+}
+div.pass_details h3 span {
+	text-align: right;
+	width: 40%;
+	float:right;
+	font-size:11px;
+	font-weight:normal;
+}
+div.pass_details span label{
+	color:green;
+}
+div.pass_details h5 {
+	color:#666;
+	font-size:12px;
+	font-weight:normal;
+	margin:5px 0;
+	padding:0 10px;
+}
+	
+div.pass_details h4{
+	margin:5px 0 2px 0;
+	padding:5px 10px;
+	background:#f0f0f0;
+	text-align:right
+}
+
+div.pass_details i{
+	font-style:normal;
+	color:#333;
+}
+	
+div.pass_details  sup{
+	color:#cb3301;
+	font-weight:bold;
+}	
+
+div.pass_details table{
+	border-collapse:collapse;
+	padding:0;
+	font-size:12px;
+	margin:8px 0;
+}
+
+div.pass_details .pass_information{
+	width:100%;
+	float:left
+}	
+
+div.cancel_busplan{
+	float:left;
+	padding:20px 0 0 40px;
+}	
+
+#payment_summary,
+#refund_summary{
+	float:left;
+	width:48%;
+	padding:0;
+	font-size:12px;
+	border-top:1px solid #d3d3d2;
+	border-right:1px solid #d3d3d2;
+	border-left	:1px solid #d3d3d2;
+}	
+	
+#payment_summary h3,
+#refund_summary h3{
+	padding: 10px 15px;
+	font-size:16px;
+	margin: 0;
+}
+.table_border{
+  border-bottom: 1px solid #999999;
+  border-top: 1px solid #999999;
+  border-left: 1px solid #999999;
+  border-right: 1px solid #999999;
+}
+#payment_summary td.totalprice,
+#payment_summary td.totalvalue {
+	border-top: 1px solid #666;
+	font-size: 16px;
+}	
+#payment_summary td.fares,
+#payment_summary td.totalprice {
+	padding-right: 10px;
+	border-right: 1px solid #ccc;	
+	text-align: right;
+}	
+div.make_payment table,
+div.pass_details table,
+#payment_summary table,
+#refund_summary table{
+	width:100%;
+	margin: 0;
+}	
+
+#payment_summary table td,
+#refund_summary table td {	
+	margin: 0;
+	border-top:1px #cccccc solid;	
+}	
+
+#payment_details td{	
+	margin: 0;
+	border-top:1px #cccccc solid;
+	font-size:13px;
+}	
+div.pass_details th {
+	padding:8px 5px;
+	background:#ebf0f4;
+	font-weight:bold;
+	text-align:left;
+}	
+	
+div.pass_details td {
+	padding:8px 5px;
+	margin:5px 0;
+	border-bottom:1px #cccccc dotted;
+	font-size:11px;
+}
+
+div.pass_details td a{
+	text-decoration:none;
+}
+
+div.pass_details td a:hover{
+	text-decoration:underline;
+}	
+		
+.rt_align {
+	text-align:right;
+}
+.retrieve_align {
+	text-align:right;
+	margin-top: 115px;
+}
+.center_align {
+	text-align:center;
+}
+	
+td.rt_align b{
+	color:green;
+}
+.hide{
+  visibility:hidden;
+}
+
+.pm_head{
+  width:120px;
+}
+.rt_align select {
+	width:auto
+}		
+	
+.name input.text {
+	width:25%;
+	margin-right:5px;
+	display:inline
+}
+.fix_width{
+	padding-left:2%;
+	width:1%;
+	white-space:nowrap;
+}	
+#payment_details {
+	width:100%;
+}
+#payment_details td {
+	text-align:right;
+	padding:5px;
+	width:1%;
+	white-space:nowrap;	
+}	
+
+#payment_details th {
+	padding:8px;
+	text-align:right;
+	border-right:1px solid #ccc;
+	border-top:1px solid #ccc;	
+	font-size:12px;
+}
+#payment_details tr.total td,
+#payment_details tr.total th { 
+	border-top:2px solid #999;
+	font-size:20px
+}
+	
+div.total{
+	padding:0;
+	margin:0;
+	border-bottom:3px solid #333;
+}
+div.total h3{
+        padding:0;
+        margin:0;
+}
+div.total h2 {
+	color:#fd6732;
+	margin:5px 0;
+	padding:10px 0;
+	background:#fff;
+}
+div.total span{
+	font-weight:normal;
+}
+div.total b {
+	background:url(../images/nos_bg.gif) left center no-repeat;
+	padding:4px 9px;
+	font-weight:normal;
+	color:#ff6735;
+	margin:0 8px 0px 0px;	
+}
+div.total i {
+	display:block;
+	float:right;
+	font-style:normal;
+	text-align:left;
+	font-style:normal;
+	color:#333;
+}
+div.total .method {width:420px;padding-top:8px;font-weight:normal;font-size:11px;color:#000000;float:right}	
+div.total .method select {width:auto}
+
+div.total em{
+	float:right;
+	display:none;
+	margin:0px 5px;
+	font-size:12px;
+	font-weight:normal;
+	background:url(../images/loader.gif) left center no-repeat;
+	padding:5px 0 5px 25px;
+	color:#333;
+}
+
+
+/** Confirm Page Style **/
+
+div.confirm_header {
+	background:#33cc00 url(../images/confirm_rt.gif) top right no-repeat;
+	padding:0;
+	margin:5px 0 0 0;
+}
+
+div.confirm_header h1{
+	background:url(../images/confirm_left.gif) top left no-repeat;
+	padding:8px 42px;
+	color:#fff;
+	font-size:20px;
+	margin:0;
+}
+div.confirm_header h3{
+	padding: 0 0 10px 42px;
+	color:#fff;
+	font-size:13px;
+	margin:0;
+}	
+	
+div.confirm_header b{
+	background:url(../images/nos_bg.gif) left center no-repeat;
+	padding:4px 9px;
+	font-weight:normal;
+	color:#ff6735;
+	margin:0 8px 0px 0px;
+}	
+	
+div.thankyou h3 {
+	color: green;
+	padding:15px;
+	font-weight:normal;
+}
+
+/* styles for internal pages*/
+
+div.rightpromos{
+	float:left;
+	margin-left:16px;
+	margin-top: 1px;
+	width:154px;
+	height: 100%;
+	background: #fff;
+}
+
+div.rightpromos a {
+	display:block;
+	margin-top: 10px;
+}
+
+div.globalcontent{
+	margin-top: 40px;
+	height: 100%;
+	background: #fff;
+}
+
+div.globalcontent:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+* html div.globalcontent{
+	height: 1%;
+}
+
+div.globalcontentarea{
+	float:left;
+	padding: 10px 0px 5px 10px;
+	background: #fff;
+	width: 585px;
+	text-align:justify;
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;	
+}
+	
+div.globalcontentoffer{
+	float:left;
+	padding: 10px 10px 10px 10px;
+	background: #fff;
+	width: 770px;
+	text-align:justify;
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;	
+}	
+
+.globalcontentofferA{
+	float:left;
+	padding: 5px 10px 10px 10px;
+	background: #fff;
+	width: 770px;
+	text-align:justify;
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;	
+}
+
+.ol{
+	list-style-type: decimal;
+	list-style-position: outside;
+}
+.greybg{
+	float:left;
+	padding: 2px 0px 2px 5px;
+	background: #eeefef;
+	width: 770px;
+	text-align:left;
+	color: #333333;
+	font-size: 12px;
+	font-weight: bold;	
+}
+
+.globalcontentimg{
+	float:right;
+	padding: 0px 0px 0px 10px;
+	background: #fff;
+	width: 280px;
+	text-align:justify;
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;	
+}
+
+div.globalcontentarea h1{
+	color: #333;
+	margin:0 0 10px 0;
+}
+
+div.globalcontentarea p{
+	padding: 10px 10px 10px 0px ;
+}
+div.globalcontentarea b{
+	color: #333333;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+div.globalcontentarea ul{
+	padding: 5px 0 5px 18px;
+	list-style-image:url(../images/q.gif);
+}
+
+div.globalcontentarea li{	
+	margin: 0 0 12px 0;
+	padding: 0 10px 0 0;
+}
+
+div.globalcontentarea li.sub{		
+}		
+
+div.globalcontentarea a {
+	font-family: arial;
+	text-decoration: none;
+}
+
+div.globalcontentarea h4{
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;
+	padding-right: 10px;
+	padding: 5px 15px 10px 15px;
+	margin:0px 0 5px 0;
+}
+	
+div.globalcontentarea h4 a{
+	text-decoration: none;
+	color: #990000;	
+}
+
+div.globalcontentarea h6 {
+	font-size: 12px; 
+	font-weight: bold;
+	margin:0px;
+	padding: 7px 15px 7px 15px;
+	color:#0067ca;
+	border-top:1px dotted #989898;
+}
+
+div.globalcontentarea h6.q_close{
+	background:url(../images/q.gif) left 10px no-repeat;
+}
+div.globalcontentarea h6.q_open{
+	background:url(../images/q_hover.gif) left 10px no-repeat;
+}
+div.globalcontentarea h4.last {
+	border-bottom: 1px dotted #666666;
+}
+div.globalcontentarea div.partners {
+	float:left;
+	margin:10px 0 0 0;
+	padding:10px 0;
+	border-bottom: 1px dotted #666666;
+}	
+div.globalcontentarea img {
+	display:block;
+	float:left;
+	margin-right:10px;
+}	
+div.globalcontentarea span{
+	display:block;
+	float:right;
+	width:430px;
+	padding-left:15px;
+	padding-right:15px;
+	background:url(../images/partners_bg.gif) left top no-repeat;
+}	
+div.globalcontentarea div a{
+	display:block;
+	font-weight:bold;
+	font-weight:bold;
+}
+/***new css by rajesh for retrive booking cancellation text***/
+div.globalcontentarearetrive{
+	float:left;
+	padding: 0px 0px 0px 0px;
+	background: #fff;
+	width: 720px;
+	text-align:justify;
+	color: #333333;
+	font-size: 10px;
+	font-weight: normal;
+}
+
+div.globalcontentarearetrive h1{
+	color: #333;
+	margin:0 0 10px 0;
+}
+
+div.globalcontentarearetrive p{
+	padding: 10px 10px 10px 0px ;
+}
+div.globalcontentarearetrive b{
+	color: #333333;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+div.globalcontentarearetrive ul{
+	padding: 0px 0 0px 0px;
+	/*list-style-image:url(/sites/default/files/images/q.gif);*/
+}
+
+div.globalcontentarearetrive li{	
+	margin: 0 0 0px 0;
+	padding: 0 0px 0 0;
+}
+
+div.globalcontentarearetrive li.sub{		
+}		
+
+
+div.globalcontentarearetrive a {
+	font-family: arial;
+	text-decoration: none;
+}
+
+div.globalcontentarearetrive h4{
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;
+	padding-right: 10px;
+	padding: 5px 15px 10px 15px;
+	margin:0px 0 5px 0;
+}
+	
+div.globalcontentarearetrive h4 a{
+	text-decoration: none;
+	color: #990000;	
+}
+
+div.globalcontentarearetrive h6 {
+	font-size: 12px; 
+	font-weight: bold;
+	margin:0px;
+	padding: 7px 15px 7px 15px;
+	color:#0067ca;
+	border-top:1px dotted #989898;
+}
+
+div.globalcontentarearetrive h6.q_close{
+	background:url(../images/q.gif) left 10px no-repeat;
+}
+div.globalcontentarearetrive h6.q_open{
+	background:url(../images/q_hover.gif) left 10px no-repeat;
+}
+div.globalcontentarearetrive h4.last {
+	border-bottom: 1px dotted #666666;
+}
+div.globalcontentarearetrive div.partners {
+	float:left;
+	margin:10px 0 0 0;
+	padding:10px 0;
+	border-bottom: 1px dotted #666666;
+}	
+div.globalcontentarearetrive img {
+	display:block;
+	float:left;
+	margin-right:10px;
+}	
+div.globalcontentarearetrive span{
+	display:block;
+	float:right;
+	width:430px;
+	padding-left:15px;
+	padding-right:15px;
+	background:url(../images/partners_bg.gif) left top no-repeat;
+}	
+div.globalcontentarearetrive div a{
+	display:block;
+	font-weight:bold;
+	font-weight:bold;
+}
+/*********new css by rajesh for retrive booking cancellation text completed****************/
+div.clear {
+	clear: both;
+}
+
+div.promotion{
+	float:left;
+	padding: 10px 0px 5px 10px;
+	background: #fff;
+	width: 490px;	
+	color: #333333;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+div.promotion h1{
+	color: #333;
+	margin:0 0 10px 0;
+}
+		
+div.promotion h4{
+	color: #666;
+	margin:10px 0 10px 0;
+	font-size:18px;
+}
+
+div.promotion p{
+	padding: 10px 10px 10px 0px ;
+	text-align:justify;
+}
+
+div.smallcol{
+	width:500px;
+	margin:5px auto;
+}	
+
+#thanks{
+display:none;
+	padding: 8px 20px;
+	background: #fbfbc9;	
+	border:1px solid #d6d6d6;
+	color:#333;	
+}
+#thanks p{
+margin: 10px 0;
+}
+
+#thanks b{
+  color:#000;
+}
+
+#thanks strong{
+  color:#f00;
+}
+#thanks p {
+  font-size: 13px;
+}
+#thanks p.t1 {
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+}
+#thanks p.t2 {
+  color: #000;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #999;
+}
+#thanks p.t5
+#thanks p.t5 {
+  text-align:center;
+}
+
+/* closer div and map div */
+#closerDiv div{
+	background:#fff;
+	border:1px solid #ccc;
+	border-bottom:2px solid #666;
+	border-right:2px solid #666;		
+	width:720px;
+	height:480px;
+	padding:2px;
+	margin:5% auto 0 auto;
+}
+	
+
+#closerDiv p {
+	text-align: center;
+	margin-top: 15px;
+}	
+#closerDiv ul{
+	text-align:left;
+	height:400px;
+}
+#closerDiv ul i{
+	margin-left:17px;
+}
+#closerDiv div h5{
+	background:#f00;
+	color:#fff;
+	margin:0;
+	padding:5px;;
+	text-align:center;
+}
+#closerDiv table{
+	background:#fff;
+	width:100%;
+	height:100%;
+}
+#closerDiv div td.city{
+	background: url(../images/mumbai.gif) top left no-repeat;
+}
+#closerDiv div td.street{
+	background:url(../images/dadar.gif) top left no-repeat;
+}
+#closerDiv div td.mylist{
+	background:#fff;
+	width:200px;
+	vertical-align:top;
+}
+#closerDiv span{
+	display:block;
+	background:#fff;
+	padding:5px;
+	border:1px solid #ccc;
+	border-bottom:2px solid #666;
+	border-right:2px solid #666;		
+	width:480px;
+	height:180px;
+	margin:10% auto;
+	text-align:left;
+}
+#closerDiv h2{
+	color:#CC0000;
+	padding:5px 5px 5px 30px;
+	font-weight:bold;
+	font-size:22px;
+	border:1px solid #FF0000;
+	background:#FFCCCC url(../images/exclamation.gif) 5px center no-repeat;
+	margin-bottom:10px;
+}
+#closerDiv h3{
+	font-weight:normal;
+	padding:5px 5px 5px 30px;
+}
+#closerDiv h4{
+	font-weight:normal;
+	padding:5px;
+	margin:0 0 10px 0;	
+}
+#closerDiv span.cancel{
+	padding:10px;
+	width:480px;
+	height:120px;
+	margin:30% auto;
+	text-align:center;
+}	
+#preloaderDiv span {
+	float:none;
+	display:block;
+	background:#fff;
+	padding:5px;
+	border:1px solid #ccc;
+	border-bottom:2px solid #666;
+	border-right:2px solid #666;		
+	width:480px;
+	height:180px;
+	margin:10% auto;
+	text-align:left;
+}
+#preloaderDiv span.banner{
+	margin:10% auto;
+	text-align:center;
+	width:758px;
+	height:120px;
+	padding:25px;
+}	
+#preloaderDiv h3.loading{
+	display:block;
+	margin:15px auto 0 auto;
+	font-size:18px;
+	font-weight:normal;
+	background:url(../images/loader.gif) left center no-repeat;
+	padding:5px 0px 5px 20px;
+	color:#333;
+	text-align:center;
+	width:300px;
+}
+
+#filterloaderDiv span {
+	display:block;
+	background:#fff;
+	padding:5px;
+	border:1px solid #ccc;
+	border-bottom:2px solid #666;
+	border-right:2px solid #666;		
+	width:480px;
+	height:180px;
+	margin:10% auto;
+	text-align:left;
+}
+#filterloaderDiv span.banner{
+	margin:10% auto;
+	text-align:center;
+	width:758px;
+	height:120px;
+	padding:25px;
+}	
+#filterloaderDiv h3.loading{
+	display:block;
+	margin:15px auto 0 auto;
+	font-size:18px;
+	font-weight:normal;
+	background:url(../images/loader.gif) left center no-repeat;
+	padding:5px 0px 5px 20px;
+	color:#333;
+	text-align:center;
+	width:300px;
+}
+
+#loaderMap a{
+	font-weight:bold;
+	font-size:30px;
+}
+
+#loadingMsg{
+	color:#333333;
+	font-size:12px;
+	font-weight:bold;
+}	
+
+/* footer include styles */
+#footermenu{
+	padding:5px 5px;
+	background:#f8f8f8;
+	border-top:1px solid #dfdfdf;
+	margin:0;
+}
+	
+#footerleftmenu{
+}
+	
+#footerleftmenu ul{
+}
+	
+#footerleftmenu li {
+	font-size:11px;
+	margin-right:3px;
+}
+	
+#footerleftmenu a {
+	color:#0065cd;
+	text-decoration:underline;
+}
+	
+#footerleftmenu a:hover {
+	color:#000;
+}
+	
+#footerrightmenu{
+	float:right;
+}
+	
+#footerrightmenu ul{
+	text-align:right;
+}
+	
+#footerrightmenu li {
+	font-size:11px;
+	margin-right:3px;
+}
+	
+#footerrightmenu a {
+	color:#0065cd;
+	text-decoration:underline;
+}
+	
+#footerrightmenu a:hover {
+	color:#cc0000;
+}
+	
+#footer p {
+	color:#989898;
+	margin: 0; 
+	padding: 10px 0; 
+	font-size:10px;
+}
+	
+
+/* common styles for floats and clear fix*/
+
+.fltrt { 
+	float: right;
+	margin-left: 8px;
+}
+	
+.fltlft { 
+	float: left;
+	margin-right: 8px;
+}
+	
+br.clearfloat { 
+  clear:both;
+    height:0;
+    font-size: 1px;
+    line-height: 0px;
+    display: block;
+    width: 100%;
+}
+
+/* PNR box*/
+#washout { 
+	background-color:#fff; 
+	position:absolute;
+	left:0px; 
+	top:0px;
+	z-index:900; 
+	width:100%;
+	height:100%;
+	filter:alpha(opacity=60);
+	-moz-opacity:0.6;
+	opacity:0.6;
+}	
+#closerDiv,	
+#PNRcloserDiv,
+#PNRcloserDivTA,
+#HotSeatDiv,
+#travelAgentDiv,
+#preloaderDiv,
+#filterloaderDiv { 
+	position:absolute;
+	left:0px; 
+	top:0px;
+	display:none;
+	width:100%;
+	height:100%;
+	z-index:901;
+	overflow: hidden;
+}
+#PNRcloserDiv,
+#PNRcloserDivTA,
+#HotSeatDiv,	
+#travelAgentDiv {
+	padding-top:200px;
+	text-align: center;	
+}	
+#PNRcloserDiv table,
+#PNRcloserDivTA table,
+#HotSeatDiv table,
+#travelAgentDiv table {
+	width:320px;	
+	background:#fff;	
+	border:1px solid #ccc;
+	border-bottom:2px solid #666;
+	border-right:2px solid #666;
+	margin:0 auto 0 auto;
+	text-align: left;
+}
+#PNRcloserDiv th,
+#PNRcloserDivTA th,
+#HotSeatDiv th,	
+#travelAgentDiv th {
+	color:#fff;
+	padding:10px;
+	font-weight:bold;
+	font-size:16px;
+	background:#ff6634;
+}
+#PNRcloserDiv td,
+#PNRcloserDivTA td,
+#HotSeatDiv td,	
+#travelAgentDiv td {
+	padding-top: 5px;
+	font-size:11px;	
+}
+#PNRcloserDiv td.small,
+#PNRcloserDivTA td.small,
+#HotSeatDiv td.small,
+#travelAgentDiv td.small {
+	padding-right: 3px;
+	text-align: right;
+}	
+DIV.clearfixh:after {
+	content:".";
+	display:block;
+	visibility:hidden;
+	clear:both;
+	line-height:0;
+	height:0;
+}
+html .clearfixh {
+	height:25px;
+}	
+.clearfixs:after {
+	content:".";
+	display:block;
+	visibility:hidden;
+	clear:both;
+	line-height:0;
+	height:0;
+}
+html .clearfixs {
+	height:230px;
+}
+
+/* Seat shell script */
+table.shell {
+  width: auto;
+}
+table.shell td {
+	padding: 0;	
+	border: 0;
+}
+table.shell td.left {
+	vertical-align: top;
+	width:61px;
+	background: url(../images/bus-left-bottom.gif) no-repeat bottom left;
+}	
+table.shell td.left span {
+	color: #666;
+	display:block;
+	text-align: right;
+	padding: 10px 5px;
+}			
+table.shell td.right {
+	vertical-align: top;
+	width:5px;
+	background: url(../images/bus-right-bottom.gif) no-repeat bottom right;
+}			
+table.shell td.bottom {
+	height: 10px;
+	background: url(../images/bus-bottom.gif) no-repeat right top;	
+}		
+table.shell td.top {
+	height: 10px;
+	background: url(../images/bus-top.gif) no-repeat right bottom;	
+}
+table.shell td.center {
+	padding:10px 0 0 0;
+	text-align: right;
+}
+table.shell td.right img,		
+table.shell td.left img {
+	background-color: white;
+}
+
+/* Seat Map classes */	
+
+.seat_selection {
+	z-index: 2;
+	background:#F9F9F9;
+	display:block;
+	border:3px solid #a9a9a9;
+	min-height: 410px;
+	width:757px;
+	padding: 10px 0;
+}
+.seat_selection span.x {
+	cursor: pointer;
+	cursor: hand;	
+	font-size: 30px;
+	position: absolute;
+	top: -10px;
+	right: 0;	
+}		
+.seat_selection .seatErr {
+  display: none;
+  float: left;
+}
+.seat_selection .noResult {
+  display: none;
+}
+.seat_selection .note {
+  display: block;
+  float: left;
+  padding-left: 50px;
+  padding-right: 15px;
+  padding-top: 5px;
+  text-align: left;
+  width: auto;
+}
+#seatdetails {
+	float:left;	
+	width:120px;
+	text-align:right;
+	margin:0 50px 0  30px;
+}
+#seatdetails h6 {
+	font-size:12px;
+	margin:0 0 10px 0;
+}
+#seatdetails p{
+	font-size:11px;
+	color:#3b3c3e;
+	margin:8px 0;
+}
+#seatselector {
+	margin-left: 60px;
+	float: left;
+}
+div.right table.shell {
+	float: right;	
+	margin-bottom: 10px;
+}	
+div.right table#table,	 
+div.right table#upperDeckTable	{
+	margin-bottom: 10px;
+	padding-bottom:10px;
+}
+table#table, 
+table#upperDeckTable {
+	width: auto;	
+	margin-right: 10px;	
+	padding-right:10px;
+}	
+table.shell table td,
+table.shell table td {
+	font-size: 10px;
+	vertical-align: middle;
+	text-align:center;	
+	height: 19px;	
+}
+td.availableSeater,
+td.bookedSeater,
+td.bookedFemaleSeater,	
+td.currentSeater,td.disabledSeat {
+	background-image:url('../images/seat_image.gif');
+	background-repeat: no-repeat;
+	width:23px;	
+}	
+td.availableSeater {
+	color:#000;
+	background-color:#fff;
+	cursor:hand;
+	cursor:pointer;	
+}
+table.shell table td.bookedSeater {
+	color: #fff;
+	background-color:#FF6533;
+	cursor: default;
+}
+table.shell table td.bookedFemaleSeater {
+	color: #fff;
+	background-color:#ff66cc;
+	cursor: default;
+}		
+td.currentSeater {
+	color:#fff;
+	background-color:#99CC01;
+	cursor:hand;
+	cursor:pointer;	
+}
+td.disabledSeat, td.disabledSleeper {
+	background-color: #eee;
+}
+img.bookedSeater {
+	background-color:#FF6533;	
+}
+img.bookedFemaleSeater {
+	background-color:#ff66cc;	
+}	
+img.availableSeater {
+	background-color:#fff;	
+}	
+img.currentSeater {
+	background-color:#99CC01;	
+}		
+td.availableSleeper,
+td.bookedSleeper,
+td.bookedFemaleSleeper,
+td.currentSleeper,
+td.disabledSleeper  {
+	background-image:url('../images/sleeper_image.gif');
+	background-repeat:no-repeat;	
+	color:#000;
+	width:46px;
+}
+td.availableSleeper {
+	color: #000;
+	background-color: #fff;
+	cursor:hand;
+	cursor:pointer;	
+}	
+table.shell table td.bookedSleeper{
+	color:#fff;
+	background-color:#FF6533;
+	cursor: default;
+}
+table.shell table td.bookedFemaleSleeper{
+	color:#fff;
+	background-color:#ff66cc;
+	cursor: default;
+}	
+td.currentSleeper{
+	color:#fff;
+	background-color:#99CC01;
+	cursor:hand;
+	cursor:pointer;	
+}
+div.cncellation_details th {
+	padding:8px 5px;
+	text-align:center;
+	background:#ebf0f4;
+	font-size:12px;
+}	
+	
+div.cncellation_details td {
+	padding:8px 5px;
+	margin:5px 0;
+	border-bottom:1px #cccccc ;
+	font-size:11px;
+}
+div.pass_details #cancel_info{
+	margin:10px 0 200px 0;
+}		
+.obsubtitle {
+	height: 20px;
+	font:  12px verdana;
+	background: #eee;
+	padding: 10px 0px 10px 0px;
+	vertical-align: middle;
+	text-align: left;
+}
+.obtitle {
+	width: 760px;
+	height: 20px;
+	font: bold 14px verdana;
+	border: 1px solid #666;
+	border-collapse: collapse;
+	background: #ccc;
+	padding: 10px 0px 0px 0px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.new{
+position: relative;
+bottom: 10px;
+right: 164px;
+
+}
+
+.part_technology { 
+ width: 230px;
+ border:0px solid #ccc;
+ padding:0px 5px 5px 10px;
+ margin:0px 0px 0px 0px;
+ float:left;
+ align:center;
+ }
+ 
+.part_business{ 
+ width: 470px;
+ border:0px solid #ccc;
+ padding:10px;
+ margin:10px 0px 10px 0px;
+ float:right;
+ }
+ 
+#myfooter {
+ width: 770px;
+ float: left;
+ }
+ 
+#myfooter #rightCol1 {  
+ float:right;
+ width:490px;
+ margin:10px 0 0 0;
+ }
+*html #myfooter #rightCol1 { 
+ float:right;
+ width:490px;
+ margin:10px 0 0 0;
+ }
+

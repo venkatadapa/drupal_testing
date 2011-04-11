@@ -1,0 +1,76 @@
+// $Id$ script.js
+
+$('document').ready(function() {
+  $("form#bus-reservation-search-form fieldset.expandable .more-options").click(function() {
+    if ($("form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper").is(":hidden")) {
+      $("form#bus-reservation-search-form fieldset.expandable").addClass('expanded');
+    } 
+    if ($("form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper").is(":visible")) {
+      $("form#bus-reservation-search-form fieldset.expandable").removeClass('expanded');
+    }
+    $("form#bus-reservation-search-form fieldset.expandable .fieldset-wrapper").slideToggle('slow');
+  });
+
+  $(".group-booking-details input").attr('readonly', 'readonly');
+
+  $("#modify-search-title .block-collapse").click(function() {
+    if ($("#flights-filter-form-page").is(":hidden")) {
+      $(this).addClass('block-expanded');
+    }
+    if ($("#flights-filter-form-page").is(":visible")) {
+      $(this).removeClass('block-expanded');
+    }
+    $("#flights-filter-form-page").slideToggle('slow');
+  });
+
+  $("#price_range .block-collapse").click(function() {
+    if ($("#price-range-content").is(":hidden")) {
+      $(this).addClass('block-expanded');
+    }
+    if ($("#price-range-content").is(":visible")) {
+      $(this).removeClass('block-expanded');
+    }
+    $("#price-range-content").slideToggle('slow');
+  });
+
+  $("#time_range .block-collapse").click(function() {
+    if ($("#time-range-content").is(":hidden")) {
+      $(this).addClass('block-expanded');
+    }
+    if ($("#time-range-content").is(":visible")) {
+      $(this).removeClass('block-expanded');
+    }
+    $("#time-range-content").slideToggle('slow');
+  });
+
+  $("#stops-options .block-collapse").click(function() {
+    if ($("#stops-options-radios").is(":hidden")) {
+      $(this).addClass('block-expanded');
+    }
+    if ($("#stops-options-radios").is(":visible")) {
+      $(this).removeClass('block-expanded');
+    }
+    $("#stops-options-radios").slideToggle('slow');
+  });
+
+  $("#airlines-title .block-collapse").click(function() {
+    if ($(".airlines_checkboxes").is(":hidden")) {
+      $(this).addClass('block-expanded');
+    }
+    if ($(".airlines_checkboxes").is(":visible")) {
+      $(this).removeClass('block-expanded');
+    }
+    $(".airlines_checkboxes").slideToggle('slow');
+  });
+
+  $("#refundable-heading .block-collapse").click(function() {
+    if ($("#edit-refundable-only-wrapper").is(":hidden")) {
+      $(this).addClass('block-expanded');
+    }
+    if ($("#edit-refundable-only-wrapper").is(":visible")) {
+      $(this).removeClass('block-expanded');
+    }
+    $("#edit-refundable-only-wrapper").slideToggle('slow');
+  });
+
+});

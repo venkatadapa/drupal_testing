@@ -1,0 +1,76 @@
+<?php
+// define namespace
+define('NUSOAP_NAME_SPACE', 'spotonline.dev');
+
+// define path to nusoap library file
+$nu_soap_path = 'lib/nusoap.php';
+
+// ensure nu_soap library exsists
+if (!file_exists($nu_soap_path)) {
+  die('An error has occurred initializing the soap server.');
+ }
+
+// include nu_soap library
+require_once ($nu_soap_path);
+
+// create new soap server instance
+$soap_server = new nusoap_server();
+
+// configure wsdl
+$soap_server->configureWSDL(NUSOAP_NAME_SPACE, 'urn:'. NUSOAP_NAME_SPACE);
+
+// add a custom data type: person
+$soap_server->wsdl->addComplexType(
+				   'person',
+				   'complexType',
+				   'struct',
+				   'all',
+				   '',
+				   array(
+					 'firstName' => array(
+							      'name' => 'firstName',
+							      'type' => 'xsd:string',
+							      ),
+					 'lastName' => array(
+							     'name' => 'lastName',
+							     'type' => 'xsd:string',
+							     ),
+					 )
+				   );
+
+// register method: personTransfer
+$soap_server->register(
+		       // method name
+		       'personTransfer',
+		       // input args
+		       array('person' => 'tns:person'),
+		       // output args
+		       array('return' => 'tns:person'),
+		       // namespace
+		       'uri:'. NUSOAP_NAME_SPACE,
+		       // SOAPAction
+		       'uri:'. NUSOAP_NAME_SPACE .'#personTransfer',
+		       // style
+		       'rpc',
+		       // use
+  'encoded'
+		       );
+
+// process raw post data
+$HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '';
+$soap_server->service($HTTP_RAW_POST_DATA);
+
+/**
+ * Define soap methods
+ */
+function personTransfer($person = array()) {
+
+  // per testing, modify data
+  foreach ($person as $key => $value) {
+    $person[$key] = $value . "!";
+  };
+
+  return $person;
+
+}
+?>

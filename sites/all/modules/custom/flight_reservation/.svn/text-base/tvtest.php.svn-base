@@ -1,0 +1,114 @@
+<?php
+  /*
+
+  *             $Id: wsdlclient3b.php,v 1.1 2004/06/15 15:38:29 snichol Exp $
+
+  *
+
+  *             WSDL client sample.
+
+  *
+
+  *             Service: WSDL
+
+  *             Payload: rpc/encoded (params as an XML string; cf. wsdlclient3.php)
+
+  *             Transport: http
+
+  *             Authentication: none
+
+  */
+
+require_once('lib/nusoap.php');
+
+$proxyhost = isset($_POST['proxyhost']) ? $_POST['proxyhost'] : '';
+
+$proxyport = isset($_POST['proxyport']) ? $_POST['proxyport'] : '';
+
+$proxyusername = isset($_POST['proxyusername']) ? $_POST['proxyusername'] : '';
+
+$proxypassword = isset($_POST['proxypassword']) ? $_POST['proxypassword'] : '';
+
+$client = new soapclient('http://stagews.ticketvala.com/axis2/services/WSTicketvala?wsdl', true,
+
+			 $proxyhost, $proxyport, $proxyusername, $proxypassword);
+
+$client->setEndpoint('http://stagews.ticketvala.com/axis2/services/WSTicketvala');
+
+//$namesp=array(,'http://travis.com/webservices/WSTicketvala/WSTicketvala');
+
+
+$client->soap_defencoding = 'UTF-8';
+$err = $client->getError();
+
+if ($err) {
+
+  echo '<h2>Constructor error</h2><pre>' . $err . '</pre>';
+
+ }
+
+$params =<<<XML
+
+<sns:wsGetCity>
+<!--Optional:-->
+<sns:wsGetCityRQ>
+<!--Optional:-->
+            <wsAuthenticate  xmlns="http://travis.com/webservices">
+  <!--Optional:-->
+               <userId  xmlns="http://travis.com/webservices">spotbill</userId>
+               <!--Optional:-->
+               <groupId  xmlns="http://travis.com/webservices">1</groupId>
+               <!--Optional:-->
+               <password xmlns="http://travis.com/webservices">spotbill@mmyt</password>
+            </wsAuthenticate>
+	       </sns:wsGetCityRQ>
+	       </sns:wsGetCity>
+
+
+	       XML;
+
+$result = $client->call('wsGetCity', $params,'http://travis.com/webservices/WSTicketvala/WSTicketvala');
+
+// Check for a fault
+
+if ($client->fault) {
+
+  echo '<h2>Fault</h2><pre>';
+
+  print_r($result);
+
+  echo '</pre>';
+
+ } else {
+
+  // Check for errors
+
+  $err = $client->getError();
+
+  if ($err) {
+
+    // Display the error
+
+    echo '<h2>Error</h2><pre>' . $err . '</pre>';
+
+  } else {
+
+    // Display the result
+
+    echo '<h2>Result</h2><pre>';
+
+    print_r($result);
+
+    echo '</pre>';
+
+  }
+
+ }
+
+echo '<h2>Request</h2><pre>' . htmlspecialchars($client->request, ENT_QUOTES) . '</pre>';
+
+echo '<h2>Response</h2><pre>' . htmlspecialchars($client->response, ENT_QUOTES) . '</pre>';
+
+echo '<h2>Debug</h2><pre>' . htmlspecialchars($client->debug_str, ENT_QUOTES) . '</pre>';
+
+?>

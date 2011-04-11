@@ -1,0 +1,5 @@
+/* CSS for IE7 browser */
+
+FORM#flights-form-page .form-select {
+  cursor: pointer;
+}
